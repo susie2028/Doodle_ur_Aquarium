@@ -92,4 +92,3 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 .gpl{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-height:48vh;overflow:auto;margin:16px 0 4px;padding:4px}
 .gpl button{width:116px;display:flex;flex-direction:column;align-items:center;gap:4px;border:2.5px solid #2b2a63;border-radius:14px;background:#fff;padding:8px 6px;cursor:pointer;font:700 18px Gaegu,sans-serif;color:#2b2a63;box-shadow:2px 3px 0 #2b2a63;transition:transform .12s}.gpl button:hover{transform:scale(1.06)}
 .gpl img{width:100%;height:58px;object-fit:contain}.gpl span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gnew b{font-size:40px;line-height:58px;height:58px}
-.gmode button{width:150px}.gmode i{display:block;width:58px;height:58px;color:#2b2a63}.gpl button:disabled{opacity:.4;cursor:not-allowed;transform:none}#gpick .gnote{margin-top:8px;font-size:16px}
