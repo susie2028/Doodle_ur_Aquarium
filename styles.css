@@ -15,13 +15,13 @@ body{margin:0;overflow:hidden;background:var(--bg) center/cover no-repeat fixed;
 .cb[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,4px);white-space:nowrap;background:var(--card);color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:2px 14px;font-size:18px;font-weight:700;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:5}
 .cb[data-tip]:hover::after,.cb[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
 #bd::after{left:0;transform:translateY(4px)}#bd:hover::after,#bd:focus-visible::after{transform:none}
-#bm::after{left:auto;right:0;transform:translateY(4px)}#bm:hover::after,#bm:focus-visible::after{transform:none}
+#bm::after,#bgm::after{left:auto;right:0;transform:translateY(4px)}#bm:hover::after,#bm:focus-visible::after,#bgm:hover::after,#bgm:focus-visible::after{transform:none}
 /* 아이콘: 반듯한 선을 살짝 삐뚤게, 호버하면 지글지글 */
 [data-ic]>svg:not(.rg),.ico>svg,.ed>svg{filter:url(#wob0)}
 button:hover>svg:not(.rg),button:hover .ico>svg,button:focus-visible>svg:not(.rg){animation:jig .3s steps(1) infinite}
 @keyframes jig{0%{filter:url(#wob0)}33%{filter:url(#wob1)}66%{filter:url(#wob2)}}
 @media(prefers-reduced-motion:reduce){button:hover>svg:not(.rg),button:hover .ico>svg{animation:none}}
-#bm{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+#bm{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}#bgm{position:fixed;right:94px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 #nav{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:14px}
 .cb{position:relative;width:64px;height:64px;border:0;background:none;color:#2b2a63;padding:11px;cursor:pointer}
 .cb>svg{position:relative}.cb>.rg{position:absolute;inset:0;overflow:visible;pointer-events:none;filter:url(#cutS)}.rg path{fill:#fff;stroke:none}.rg .tx{opacity:.25}.rg .ol{display:none}.cb.on .rg path:first-of-type{fill:var(--ink)}.cb.on .rg .tx{display:none}
@@ -73,3 +73,18 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 .ftw .nb{width:72px;padding:2px;box-sizing:border-box;background:var(--card);position:relative;z-index:1}.ftw .nb img{display:block;width:100%;height:38px;object-fit:contain;background:#fff}.ftw .nb small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ftw .nb.me{border-width:4px}.ftw .nb.ph{visibility:hidden}.fsum{font-size:18px;color:var(--mute);margin:16px 0 4px!important;line-height:1.6!important}
 .cb,.btn,.dc,.ic,.x{transition:transform .12s}.cb:hover,.dc:hover,.ic:hover,.x:hover{transform:scale(1.1)}.btn:hover{transform:scale(1.06)}.btn:active{transform:translate(2px,2px) scale(1.03)}.ftw [data-id]{cursor:pointer}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- 미니게임 ---------- */
+#game{position:fixed;inset:0;z-index:15;background:#fbfbf8 url(assets/kiboecontor-paper-626781_1920.jpg) center/cover;opacity:0;transition:opacity .8s;color:#2b2a63}
+#game.on{opacity:1}
+#gc{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;opacity:0;transition:opacity .4s}#game.run #gc{opacity:1}
+.gbox{position:absolute;background:#fff;color:#2b2a63;padding:10px 18px;filter:url(#cutS);font:700 20px/1.3 Gaegu,sans-serif}
+#gload{left:50%;top:50%;transform:translate(-50%,-50%);font-size:30px;padding:14px 30px}
+.gbtn{border:0;background:#fff;color:#2b2a63;cursor:pointer;font:700 20px Gaegu,sans-serif}
+#gexit{left:20px;top:calc(18px + env(safe-area-inset-top,0px))}#gexit:hover{transform:scale(1.05)}
+#grank{right:20px;top:calc(18px + env(safe-area-inset-top,0px));min-width:210px;font-weight:400;font-size:19px}
+#grank h4{margin:0 0 6px;font-size:22px}#grank ol{margin:0;padding:0;list-style:none}#grank li{display:flex;justify-content:space-between;gap:14px;line-height:1.5}#grank li.me{font-weight:700;text-decoration:underline wavy #f47a9b}#grank li small{color:#77778f}#grank .gap{color:#77778f;text-align:center}
+#gdash{left:20px;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px}#gdash .gb{width:140px;max-width:none}#gdash .gb i{transition:width .1s linear}#gdash.ready .gb i{background:#f08a4b}
+#gdb{font-size:16px;padding:2px 12px;border:2.5px solid #2b2a63;border-radius:999px}
+#gover{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;padding:22px 34px;font-size:22px}#gover h3{margin:0 0 8px;font-size:34px}#gover p{margin:4px 0;font-weight:400}#gover .row{justify-content:center;margin-top:14px}
+#ghelp{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-weight:400;font-size:18px;white-space:nowrap}

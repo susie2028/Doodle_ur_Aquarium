@@ -1,9 +1,10 @@
 (()=>{
+const DUA=window.DUA={gameCb:null};
 const KEY='doodle-aquarium-v2',MAX=15,DAY=60,ADULT=180,COOL=300,WW=1280,WH=720,BOT=515,EGGY=514;
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const svg=p=>`<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const IC={fish:'<path d="M5 27c7-10 18-10 24 0-6 10-17 10-24 0zM29 27l8-7v14z"/><circle cx="13" cy="26" r="1.5"/><path d="M38 6v10M33 11h10"/>',fishl:'<path d="M4 18c5-8 14-8 19 0-5 8-14 8-19 0zM23 18l7-6v12z"/><path d="M16 36c5-8 14-8 19 0-5 8-14 8-19 0zM35 36l7-6v12z"/><circle cx="9" cy="17" r="1.5"/><circle cx="21" cy="35" r="1.5"/>',fishk:'<path d="M8 26l11 11L41 11"/>',food:'<circle cx="14" cy="14" r="3"/><circle cx="31" cy="10" r="3"/><circle cx="23" cy="25" r="3"/><circle cx="38" cy="29" r="3"/><circle cx="12" cy="37" r="3"/><circle cx="29" cy="42" r="3"/>',gear:'<path d="M37.3 19.6L43.1 20.3L43.1 27.7L37.3 28.4L36.5 30.3L40.2 34.9L34.9 40.2L30.3 36.5L28.4 37.3L27.7 43.1L20.3 43.1L19.6 37.3L17.7 36.5L13.1 40.2L7.8 34.9L11.5 30.3L10.7 28.4L4.9 27.7L4.9 20.3L10.7 19.6L11.5 17.7L7.8 13.1L13.1 7.8L17.7 11.5L19.6 10.7L20.3 4.9L27.7 4.9L28.4 10.7L30.3 11.5L34.9 7.8L40.2 13.1L36.5 17.7Z"/><circle cx="24" cy="24" r="6"/>',trash:'<path d="M9 13h30M19 13V7h10v6M13 13l2 29h18l2-29M20 20v15M28 20v15"/>',undo:'<path d="M17 12L7 22l10 10M7 22h23c8 0 12 5 12 14"/>',x:'<path d="M10 10l28 28M38 10L10 38"/>',pen:'<path d="M9 39l3-10L31 10l7 7-19 19z"/><path d="M27 14l7 7"/>',mini:'<rect x="5" y="9" width="38" height="30" rx="4"/><rect x="23" y="24" width="16" height="11" rx="2"/>',dice:'<rect x="7" y="7" width="34" height="34" rx="7"/><circle cx="17" cy="17" r="2.2"/><circle cx="31" cy="17" r="2.2"/><circle cx="24" cy="24" r="2.2"/><circle cx="17" cy="31" r="2.2"/><circle cx="31" cy="31" r="2.2"/>'};
+const IC={fish:'<path d="M5 27c7-10 18-10 24 0-6 10-17 10-24 0zM29 27l8-7v14z"/><circle cx="13" cy="26" r="1.5"/><path d="M38 6v10M33 11h10"/>',fishl:'<path d="M4 18c5-8 14-8 19 0-5 8-14 8-19 0zM23 18l7-6v12z"/><path d="M16 36c5-8 14-8 19 0-5 8-14 8-19 0zM35 36l7-6v12z"/><circle cx="9" cy="17" r="1.5"/><circle cx="21" cy="35" r="1.5"/>',fishk:'<path d="M8 26l11 11L41 11"/>',food:'<circle cx="14" cy="14" r="3"/><circle cx="31" cy="10" r="3"/><circle cx="23" cy="25" r="3"/><circle cx="38" cy="29" r="3"/><circle cx="12" cy="37" r="3"/><circle cx="29" cy="42" r="3"/>',gear:'<path d="M37.3 19.6L43.1 20.3L43.1 27.7L37.3 28.4L36.5 30.3L40.2 34.9L34.9 40.2L30.3 36.5L28.4 37.3L27.7 43.1L20.3 43.1L19.6 37.3L17.7 36.5L13.1 40.2L7.8 34.9L11.5 30.3L10.7 28.4L4.9 27.7L4.9 20.3L10.7 19.6L11.5 17.7L7.8 13.1L13.1 7.8L17.7 11.5L19.6 10.7L20.3 4.9L27.7 4.9L28.4 10.7L30.3 11.5L34.9 7.8L40.2 13.1L36.5 17.7Z"/><circle cx="24" cy="24" r="6"/>',trash:'<path d="M9 13h30M19 13V7h10v6M13 13l2 29h18l2-29M20 20v15M28 20v15"/>',undo:'<path d="M17 12L7 22l10 10M7 22h23c8 0 12 5 12 14"/>',x:'<path d="M10 10l28 28M38 10L10 38"/>',game:'<path d="M15 15c7-12 22-11 24 9-2 20-17 21-24 9l10-9z"/><path d="M39 24l7-7v14z"/><circle cx="27" cy="15" r="1.8"/><path d="M1 24c1.6-3 5.2-3 6.8 0-1.6 3-5.2 3-6.8 0zM7.8 24l3-2.4v4.8z"/>',pen:'<path d="M9 39l3-10L31 10l7 7-19 19z"/><path d="M27 14l7 7"/>',mini:'<rect x="5" y="9" width="38" height="30" rx="4"/><rect x="23" y="24" width="16" height="11" rx="2"/>',dice:'<rect x="7" y="7" width="34" height="34" rx="7"/><circle cx="17" cy="17" r="2.2"/><circle cx="31" cy="17" r="2.2"/><circle cx="24" cy="24" r="2.2"/><circle cx="17" cy="31" r="2.2"/><circle cx="31" cy="31" r="2.2"/>'};
 document.querySelectorAll('[data-ic]').forEach(b=>b.innerHTML=svg(IC[b.dataset.ic]));
 /* 하단 버튼 테두리: 어항 선처럼 삐뚤빼뚤한 원 (고정) */
 document.querySelectorAll('.cb').forEach((b,n)=>{const q=[];for(let i=0;i<18;i++){const a=i/18*6.283,h=Math.sin((i+n*31)*12.9898)*43758.5453,r=29.5+(h-Math.floor(h)-.5)*2.6;q.push((i?'L':'M')+(32+r*Math.cos(a)).toFixed(1)+' '+(32+r*Math.sin(a)).toFixed(1))}
@@ -484,13 +485,14 @@ function openDraw(e){hatching=e||null;pc.clearRect(0,0,420,280);patc.clearRect(0
  if(e){const a=gv(e.ga),b=gv(e.gb);setCol(Math.random()<.5?a.c:b.c);lw=Math.max(2,Math.round((a.w+b.w)/2*10)/10);$('#nm').value=autoName(e);$('#mt').textContent='새끼 물고기 그리기';mark()}
  else{setCol('#2b2a63');lw=4;$('#nm').value='';$('#mt').textContent='물고기 그리기'}
  mark();$('#m').hidden=false;wob()}
-const closeDraw=()=>{$('#m').hidden=true};
+const closeDraw=()=>{$('#m').hidden=true;if(DUA.gameCb){const cb=DUA.gameCb;DUA.gameCb=null;cb(null)}};
 $('#mx').onclick=closeDraw;$('#sx').onclick=()=>$('#sm').hidden=true;
 addEventListener('keydown',e=>{if(e.key==='Escape'){closeDraw();$('#sm').hidden=true;$('#lm').hidden=true}});
 $('#ok').onclick=()=>{
- if(!hatching&&full()){toast(`어항에 자리가 없어요. 큰 물고기는 자리를 많이 차지해요.`);return}
+ if(!hatching&&!DUA.gameCb&&full()){toast(`어항에 자리가 없어요. 큰 물고기는 자리를 많이 차지해요.`);return}
  let src=pad;if(mode==='c'){src=document.createElement('canvas');src.width=420;src.height=280;render(src.getContext('2d'),420,280,P,pat)}
  const c=trimC(src,mode==='c'?bbox(src,10):null,mode==='d'?[420,280]:null);if(!c){toast('먼저 물고기를 그려 주세요');return}
+ if(DUA.gameCb){const cb=DUA.gameCb;DUA.gameCb=null;const nm=$('#nm').value.trim()||rname(sexv);$('#m').hidden=true;cb({img:c,name:nm,p:mode==='c'?{...P}:null});return}
  let img;try{img=c.toDataURL('image/png')}catch(e){toast('그림을 저장하지 못했어요');return}
  const o={name:$('#nm').value.trim()||'이름 없는 물고기',sex:sexv,img,k:mode,t:hatching?hatching.t:null};
  if(mode==='c'){o.p={...P};o.v=3;o.pt=patURL()}else o.g=genesD(src);o.k=mode==='c'?'c':'d';
@@ -526,6 +528,13 @@ $('#egg').checked=eggOn;$('#egg').onchange=e=>{eggOn=e.target.checked;try{localS
 try{$('#vol').value=localStorage.getItem('doodle-vol')||50}catch(e){}$('#vol').oninput=e=>{try{localStorage.setItem('doodle-vol',e.target.value)}catch(_){}};
 let rsA=0;$('#rs').onclick=()=>{const b=$('#rs');if(!rsA){rsA=setTimeout(()=>{rsA=0;b.textContent='어항 리셋'},4000);b.textContent='모두 사라져요. 한 번 더!';return}
  clearTimeout(rsA);rsA=0;b.textContent='어항 리셋';fish=[];foods=[];fx=[];eggs=[];sel=selE=null;start=Date.now();save();ui();panel();$('#sm').hidden=true;toast('어항을 새로 비웠어요')};
+
+/* ---------- 게임(game.js)과 공유 ---------- */
+function genP(){const p={...P0};for(const [k,,a,b,st] of SL){if(k==='lw')continue;const v=rnd(a,b);p[k]=st>=1?Math.round(v):Math.round(v*100)/100}
+ p.bt=Math.round(cl(Math.round(rnd(0,4))+rnd(-.2,.2),0,4)*20)/20;p.lw=Math.round(rnd(1.5,4)*10)/10;p.bc=rc();p.lc=Math.random()<.5?'#2b2a63':dk(p.bc);p.fc=Math.random()<.6?rc():p.bc;p.pc=rc();if(Math.random()<.35)p.pa=0;return p}
+Object.assign(DUA,{render,stick,up,trimC,bbox,genP,rname:sx=>rname(sx),snd:()=>sndPlay(),toast,
+ openGameDraw(cb){openDraw();$('#mt').textContent='내 물고기 만들기';DUA.gameCb=cb},
+ zoomIn(){camT={x:641,y:380,z:4}},zoomOut(){camT={x:641,y:350,z:1}}});
 
 new ResizeObserver(resize).observe(cv);resize();ui();
 setInterval(()=>{breedCheck();ageTxt();ui()},1000);setInterval(save,6000);
