@@ -1,0 +1,16 @@
+{
+  "name": "doodle-aquarium-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Doodle your Aquarium 미니게임 멀티 서버 (웹페이지도 같이 제공)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
