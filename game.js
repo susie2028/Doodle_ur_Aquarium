@@ -1,15 +1,13 @@
-/* ---------- 미니게임: 작은 물고기를 잡아먹고 몸집을 키우는 게임 (솔로 / 멀티) ---------- */
+/* ---------- 미니게임: 작은 물고기를 잡아먹고 몸집을 키우는 솔로 게임 ---------- */
 (()=>{
 const D=window.DUA,$=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=2600,H=1700,BOTS=16,PELLETS=170,DASH=.35,COOL=3,EAT=1.18,INK='#2b2a63';
 const G=$('#game'),gc=$('#gc'),g=gc.getContext('2d');
-let mode='solo',ws=null,you=0,myImg='',myP=null,inT=0,wantDash=false,act=false,CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
+let act=false,CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
 const tex=new Image();tex.src='assets/kiboecontor-paper-626781_1920.jpg';let texP=null;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-// 봇 모양은 정해진 씨앗으로 만들어서 멀티에서도 모두에게 같게 보이게
+// 봇 모양은 정해진 씨앗으로 만들어서 매번 같은 친구들이 나오게
 const seeded=(sd,fn)=>{const R=Math.random;let x=sd*9301+49297;Math.random=()=>(x=(x*16807)%2147483647)/2147483647;try{return fn()}finally{Math.random=R}};
-// 멀티 서버 주소: ?server=wss://... 로 지정하거나, 서버에서 연 페이지면 같은 주소의 /ws
-const WSURL=new URLSearchParams(location.search).get('server')||(location.protocol.startsWith('http')?(location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws':null);
 
 /* 바깥 테두리: 어항처럼 삐뚤빼뚤한 선 (한 번만 만들어 둠) */
 const RIM=(()=>{const q=[],r=90,c=[[r,r],[W-r,r],[W-r,H-r],[r,H-r]];for(let i=0;i<4;i++){const [cx,cy]=c[i];for(let a=0;a<=8;a++){const t=(i-2)*Math.PI/2+a/8*Math.PI/2;q.push([cx+Math.cos(t)*r+rnd(-5,5),cy+Math.sin(t)*r+rnd(-5,5)])}
@@ -35,35 +33,32 @@ const addPel=()=>pel.push({x:rnd(120,W-120),y:rnd(120,H-120),r:rnd(4,7),ph:rnd(0
 async function enter(){if(!G.hidden)return;act=true;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#gload').hidden=false;$('#gload').textContent='어항 속으로 풍덩!';$('#gover').hidden=true;$('#gpick').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;
  setTimeout(()=>G.classList.add('on'),20);await sleep(850);if(!act)return;
  if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<10;i++){const s=sprFromP(seeded(i+1,D.genP));if(s)spr.push(s);if(i%3===2)await sleep(0)}}
- if(!act)return;chooseMode()}
-function chooseMode(){$('#gload').hidden=true;const b=$('#gpick');b.hidden=false;
- b.innerHTML=`<h3>어떻게 놀까요?</h3><p>혼자 봇 물고기들과 하거나, 다른 사람들과 같은 어항에서 해요</p><div class="gpl gmode"><button id="gsolo"><i>${$('#bd svg').outerHTML}</i><span>솔로 모드</span></button><button id="gmulti" ${WSURL?'':'disabled'}><i>${$('#bgm svg').outerHTML}</i><span>멀티 참가</span></button></div>${WSURL?'':'<p class="gnote">멀티는 서버 주소로 열었을 때만 할 수 있어요</p>'}`;
- $('#gsolo').onclick=()=>{mode='solo';choose()};if(WSURL)$('#gmulti').onclick=()=>{mode='multi';choose()}}
+ if(!act)return;choose()}
 function choose(){const list=D.fishList();if(list.length)pick(list);else newFish()}
 /* 어항에 있는 물고기로 할지, 새로 만들지 고르기 */
 function pick(list){$('#gload').hidden=true;const b=$('#gpick');b.hidden=false;
  b.innerHTML=`<h3>어떤 물고기로 할까요?</h3><p>어항에 있는 물고기를 고르거나 새로 만들어요</p><div class="gpl">${list.map((f,i)=>`<button data-i="${i}"><img src="${f.img}" alt=""><span>${esc(f.name)}</span></button>`).join('')}<button id="gnew" class="gnew"><b>+</b><span>새로 만들기</span></button></div>`;
- b.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const f=list[+e.dataset.i];b.hidden=true;myImg=f.img;myP=f.p;ready(f.name,()=>f.p?sprFromP(f.p)||sprFromImg(f.im):sprFromImg(f.im))});
+ b.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const f=list[+e.dataset.i];b.hidden=true;ready(f.name,()=>f.p?sprFromP(f.p)||sprFromImg(f.im):sprFromImg(f.im))});
  $('#gnew').onclick=()=>{b.hidden=true;newFish()}}
 function newFish(){$('#gpick').hidden=true;$('#gload').hidden=false;$('#gload').textContent='내 물고기를 만들어 주세요';
- D.openGameDraw(r=>{if(!r){leave();return}try{myImg=r.img.toDataURL('image/png')}catch(e){myImg=''}myP=r.p;ready(r.name,()=>r.p?sprFromP(r.p)||sprFromImg(r.img):sprFromImg(r.img))})}
-function ready(name,mk){myName=name;$('#gload').hidden=false;$('#gload').textContent='준비 중...';setTimeout(()=>{mySpr=mk();mode==='multi'?startMulti():start()},30)}
-function start(){mode='solo';fish=[];pel=[];fx=[];over=false;bestRank=99;me=mkFish({x:W/2,y:H/2,m:1,spr:mySpr,name:myName,me:true});me.cd=0;bestM=1;fish.push(me);
+ D.openGameDraw(r=>{if(!r){leave();return}ready(r.name,()=>r.p?sprFromP(r.p)||sprFromImg(r.img):sprFromImg(r.img))})}
+function ready(name,mk){myName=name;$('#gload').hidden=false;$('#gload').textContent='준비 중...';setTimeout(()=>{mySpr=mk();start()},30)}
+function start(){fish=[];pel=[];fx=[];over=false;bestRank=99;me=mkFish({x:W/2,y:H/2,m:1,spr:mySpr,name:myName,me:true});me.cd=0;bestM=1;fish.push(me);
  for(let i=0;i<BOTS;i++)fish.push(spawnBot());for(let i=0;i<PELLETS;i++)addPel();
  cam={x:me.x,y:me.y,z:zoomFor()};$('#gload').hidden=true;$('#gover').hidden=true;$('#grank').hidden=false;$('#gdash').hidden=false;G.classList.add('run');
  help(true);run=true;last=performance.now();uiT=0;hud(last);cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
-function leave(){act=false;run=false;netClose();cancelAnimationFrame(raf);G.classList.remove('on');D.zoomOut();help(false);setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
+function leave(){act=false;run=false;cancelAnimationFrame(raf);G.classList.remove('on');D.zoomOut();help(false);setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
 function help(on){let h=$('#ghelp');if(!on){if(h)h.remove();return}if(!h){h=document.createElement('div');h.id='ghelp';h.className='gbox';G.append(h)}h.textContent='마우스로 헤엄치기 · Space로 돌진 · 나보다 작은 물고기를 먹어요!';clearTimeout(help.t);help.t=setTimeout(()=>h.remove(),6000)}
 function gameOver(by){over=true;run=false;const r=$('#gover');r.hidden=false;
  r.innerHTML=`<h3>꿀꺽!</h3><p><b>${esc(by.name)}</b>에게 먹혔어요</p><p>최고 크기 <b>${Math.round(bestM*100)}</b> · 최고 순위 <b>${bestRank}위</b></p><div class="row"><button class="btn" id="gre">다시 하기</button><button class="btn" id="gout">어항으로</button></div>`;
- $('#gre').onclick=mode==='multi'?rejoin:start;$('#gout').onclick=leave}
+ $('#gre').onclick=start;$('#gout').onclick=leave}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- 조작 ---------- */
 gc.addEventListener('pointermove',e=>{mouse={x:e.clientX,y:e.clientY}});
 gc.addEventListener('pointerdown',e=>{mouse={x:e.clientX,y:e.clientY}});
 const dash=f=>{if(f.cd>0||!f.alive)return;f.dash=DASH;f.cd=COOL};
-const doDash=()=>{if(!run)return;if(mode==='multi')wantDash=true;else dash(me)};
+const doDash=()=>{if(run)dash(me)};
 addEventListener('keydown',e=>{if(!run||!$('#m').hidden)return;if(e.code==='Space'){e.preventDefault();doDash()}});
 $('#gdb').onclick=doDash;
 $('#gexit').onclick=leave;
@@ -127,37 +122,5 @@ function hud(now){const gd=$('#gdash');gd.querySelector('i').style.width=(100*(1
  const row=(f,i)=>`<li class="${f.me?'me':''}"><span>${i+1}. ${esc(f.name)}</span><small>${score(f)}</small></li>`;
  $('#grank').innerHTML=`<h4>순위</h4><ol>${live.slice(0,5).map(row).join('')}${r>5?`<li class="gap">···</li>${row(me,r-1)}`:''}</ol>`}
 
-function loop(){if(!run)return;const now=performance.now(),dt=cl((now-last)/1000,0,.05);last=now;if(mode==='multi'){netStep(dt,now);if(!me){raf=requestAnimationFrame(loop);return}}else step(dt,now);if(!run&&!over)return;draw(now);if(run)hud(now);raf=requestAnimationFrame(loop)}
-/* ---------- 멀티: 판정은 서버가 하고, 여기서는 받은 위치를 부드럽게 그리기만 ---------- */
-const bySpr=(f,o)=>{f.spr=spr[(o.skin||0)%spr.length].s;f.ar=f.spr.height/f.spr.width;
- if(o.p){const s=sprFromP(o.p);if(s){f.spr=s.s;f.ar=s.s.height/s.s.width}}
- else if(o.img){const im=new Image();im.onload=()=>{try{const s=sprFromImg(im);f.spr=s.s;f.ar=s.s.height/s.s.width}catch(e){}};im.src=o.img}};
-function view(o){const f={id:o.id,x:o.x||W/2,y:o.y||H/2,sx:o.x||W/2,sy:o.y||H/2,vx:0,vy:0,m:1,dir:1,flip:1,dash:0,cd:0,name:o.name,me:o.id===you,alive:false,ph:rnd(0,6.3)};
- if(f.me){f.spr=mySpr.s;f.ar=f.spr.height/f.spr.width}else bySpr(f,o);return f}
-function startMulti(){netClose();fish=[];pel=[];fx=[];me=null;over=false;bestRank=99;bestM=1;$('#gload').hidden=false;$('#gload').textContent='어항 서버에 들어가는 중...';
- try{ws=new WebSocket(WSURL)}catch(e){netFail('서버 주소가 잘못됐어요');return}
- ws.onopen=join;ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}onNet(m)};
- ws.onclose=()=>{if(ws&&act&&mode==='multi'){ws=null;netFail('서버와 연결이 끊겼어요')}};ws.onerror=()=>{}}
-function join(){const ar=mySpr.s.height/mySpr.s.width;ws.send(JSON.stringify({t:'join',name:myName,img:myImg,p:myP,ar}))}
-function rejoin(){if(ws&&ws.readyState===1){$('#gover').hidden=true;over=false;me=null;fish=fish.filter(f=>!f.me);join()}else startMulti()}
-function netClose(){if(ws){const w=ws;ws=null;try{w.close()}catch(e){}}}
-function netFail(msg){run=false;D.toast(msg);$('#gload').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;G.classList.remove('run');chooseMode()}
-function onNet(m){
- if(m.t==='full'){netClose();netFail('멀티 어항이 꽉 찼어요. 잠시 뒤에 다시 해 주세요');return}
- if(m.t==='init'){you=m.you;fish=m.fish.map(view);pel=m.pel.map(p=>({x:p[0],y:p[1],r:p[2],ph:rnd(0,6.3)}));me=fish.find(f=>f.me)||null;
-  $('#gload').hidden=true;$('#gover').hidden=true;$('#grank').hidden=false;$('#gdash').hidden=false;G.classList.add('run');help(true);
-  if(!run){run=true;last=performance.now();uiT=0;cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}return}
- if(m.t==='add'){if(!fish.some(f=>f.id===m.f.id))fish.push(view(m.f));if(m.f.id===you)me=fish.find(f=>f.me);return}
- if(m.t==='del'){fish=fish.filter(f=>f.id!==m.id);return}
- if(m.t==='dead'){bestM=Math.max(bestM,(m.best||100)/100);if(me)me.alive=false;gameOver({name:m.by});run=true;return}
- if(m.t==='s'){const seen=new Set();
-  for(const [id,x,y,mm,dir,da,cd] of m.f){const f=fish.find(o=>o.id===id);if(!f)continue;seen.add(id);if(!f.alive){f.x=f.sx=x;f.y=f.sy=y}f.alive=true;f.sx=x;f.sy=y;f.m=mm/100;f.dir=dir;f.dash=da?DASH:0;f.cd=cd/10}
-  for(const f of fish)if(!seen.has(f.id))f.alive=false;
-  for(const [i,x,y,r] of m.pe||[])pel[i]={x,y,r,ph:rnd(0,6.3)};
-  for(const e of m.ev||[]){const a=fish.find(f=>f.id===e[0]);if(!a)continue;if(e[1]==='f'){const b=fish.find(f=>f.id===e[2]);if(b)eatFx(a,b,true)}else if(a.me)eatFx(a,{x:e[2],y:e[3],r:5},false)}
-  if(me&&me.m>bestM)bestM=me.m}}
-function netStep(dt,now){const k=Math.min(1,dt*12);
- for(const f of fish){if(!f.alive)continue;const ox=f.x,oy=f.y;f.x+=(f.sx-f.x)*k;f.y+=(f.sy-f.y)*k;f.vx=(f.x-ox)/(dt||1/60);f.vy=(f.y-oy)/(dt||1/60);f.flip+=(f.dir-f.flip)*Math.min(1,dt*10);f.dash=Math.max(0,f.dash-dt)}
- for(const e of fx)e.t+=dt;fx=fx.filter(e=>e.t<1.6);
- if(ws&&ws.readyState===1&&me&&me.alive&&now-inT>50){inT=now;const o={t:'in'};if(mouse){const [x,y]=mouseW();o.x=Math.round(x);o.y=Math.round(y)}if(wantDash){o.d=1;wantDash=false}ws.send(JSON.stringify(o))}}
+function loop(){if(!run)return;const now=performance.now(),dt=cl((now-last)/1000,0,.05);last=now;step(dt,now);if(!run&&!over)return;draw(now);if(run)hud(now);raf=requestAnimationFrame(loop)}
 })();
