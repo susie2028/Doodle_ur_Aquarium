@@ -16,6 +16,11 @@ body{margin:0;overflow:hidden;background:var(--bg) center/cover no-repeat fixed;
 .cb[data-tip]:hover::after,.cb[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
 #bd::after{left:0;transform:translateY(4px)}#bd:hover::after,#bd:focus-visible::after{transform:none}
 #bm::after{left:auto;right:0;transform:translateY(4px)}#bm:hover::after,#bm:focus-visible::after{transform:none}
+/* 아이콘: 반듯한 선을 살짝 삐뚤게, 호버하면 지글지글 */
+[data-ic]>svg:not(.rg),.ico>svg,.ed>svg{filter:url(#wob0)}
+button:hover>svg:not(.rg),button:hover .ico>svg,button:focus-visible>svg:not(.rg){animation:jig .3s steps(1) infinite}
+@keyframes jig{0%{filter:url(#wob0)}33%{filter:url(#wob1)}66%{filter:url(#wob2)}}
+@media(prefers-reduced-motion:reduce){button:hover>svg:not(.rg),button:hover .ico>svg{animation:none}}
 #bm{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 #nav{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:14px}
 .cb{position:relative;width:64px;height:64px;border:0;background:none;color:#2b2a63;padding:11px;cursor:pointer}

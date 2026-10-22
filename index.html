@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Doodle your Aquarium!</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261022h">
+<link rel="stylesheet" href="styles.css?v=20261022i">
 </head><body>
 <canvas id="c" aria-label="어항"></canvas>
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" aria-hidden="true"><filter id="cut" x="-30%" y="-45%" width="160%" height="190%" color-interpolation-filters="sRGB">
@@ -12,6 +12,8 @@
 <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="1" seed="9"/><feColorMatrix values="0 0 0 0 .3  0 0 0 0 .3  0 0 0 0 .35  0 0 0 -.12 .08"/><feComposite in2="w" operator="in" result="gr"/>
 <feOffset in="w" dx="2" dy="3" result="o"/><feFlood flood-color="#14142a" flood-opacity=".16"/><feComposite in2="o" operator="in" result="sh"/>
 <feMerge><feMergeNode in="sh"/><feMergeNode in="pp"/><feMergeNode in="gr"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<!-- 아이콘 손그림 흔들림: 평소엔 wob0 고정, 호버하면 세 장을 번갈아 → 지글지글 -->
+<filter id="wob0" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="wob1" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter><filter id="wob2" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="23" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
 <filter id="cutS" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
 <feMorphology in="SourceAlpha" operator="dilate" radius="4" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="d" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" result="w"/>
 <feFlood flood-color="#fff"/><feComposite in2="w" operator="in" result="pp"/>
@@ -45,5 +47,5 @@
 <p><label class="tg"><input type="checkbox" id="egg" checked> 알 낳기</label></p>
 <p><button class="btn" id="rs">어항 리셋</button></p></div></div>
 
-<script src="app.js?v=20261022h"></script>
+<script src="app.js?v=20261022i"></script>
 </body></html>
