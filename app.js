@@ -17,12 +17,13 @@ function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');c
 
 /* ---------- 저장 ---------- */
 function save(){try{localStorage.setItem(KEY,JSON.stringify({eggs,start,fish:fish.map(f=>({id:f.id,name:f.name,sex:f.sex,img:f.img,born:f.born,lb:f.lb,x:f.x,y:f.y,t:f.t,k:f.k,g:f.g,p:f.p,pt:f.pt,inh:f.inh,v:f.v,hu:f.hu,ml:f.ml}))}))}catch(e){toast('저장 공간이 부족해요. 물고기를 삭제해 주세요.')}}
-function mk(o){if(o.v===2&&o.p)o={...o,p:{...o.p,et:(o.p.et??1)+1,mt:(o.p.mt??0)+1,ft:(o.p.ft??0)+1},v:3,mig:true};const f={id:o.id||('f'+Date.now()+Math.random().toString(36).slice(2,6)),name:o.name,sex:o.sex,img:o.img,born:o.born||Date.now(),lb:o.lb||0,t:o.t||null,k:o.k||'d',g:o.g||{c:'#2b2a63',w:6},p:o.p||null,pt:o.pt||null,inh:'',v:o.v||0,fr:null,mig:!!o.mig,hu:typeof o.hu==='number'?o.hu:rnd(0,.25),ml:o.ml|0,ate:0,chase:false,
+const mtMig=p=>p&&p.mv!==2?{...p,mt:[0,1,2,3,4,1,5,6][cl(Math.round(p.mt??1),0,7)],mv:2}:p;
+function mk(o){if(o.v===2&&o.p)o={...o,p:{...o.p,et:(o.p.et??1)+1,mt:(o.p.mt??0)+1,ft:(o.p.ft??0)+1},v:3,mig:true};if(o.p)o={...o,p:mtMig(o.p)};const f={id:o.id||('f'+Date.now()+Math.random().toString(36).slice(2,6)),name:o.name,sex:o.sex,img:o.img,born:o.born||Date.now(),lb:o.lb||0,t:o.t||null,k:o.k||'d',g:o.g||{c:'#2b2a63',w:6},p:o.p||null,pt:o.pt||null,inh:'',v:o.v||0,fr:null,mig:!!o.mig,hu:typeof o.hu==='number'?o.hu:rnd(0,.25),ml:o.ml|0,ate:0,chase:false,
  x:o.x??rnd(300,980),y:o.y??rnd(260,450),vx:rnd(-20,20),vy:0,sp:rnd(25,60),tx:0,ty:0,next:0,flip:1,dir:1,ph:rnd(0,6.28),sd:rnd(0,200),w:1,h:1,dw:60,dh:40,ok:false};
  f.im=new Image();f.im.onload=()=>{f.w=f.im.naturalWidth||1;f.h=f.im.naturalHeight||1;f.ok=true;if(f.v===3)bake(f);else bakeD(f)};f.im.src=f.img;return f}
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&Array.isArray(d.fish)){
  fish=d.fish.slice(0,MAX).filter(f=>f&&typeof f.img==='string'&&f.img.startsWith('data:image/')).map(mk);
- if(Array.isArray(d.eggs))eggs=d.eggs.filter(e=>e&&e.t&&e.t.fa&&e.t.mo&&e.ga&&e.gb&&typeof e.x==='number'&&typeof e.y==='number').slice(0,MAX);
+ if(Array.isArray(d.eggs))eggs=d.eggs.filter(e=>e&&e.t&&e.t.fa&&e.t.mo&&e.ga&&e.gb&&typeof e.x==='number'&&typeof e.y==='number').slice(0,MAX).map(e=>({...e,ga:{...e.ga,p:mtMig(e.ga.p)},gb:{...e.gb,p:mtMig(e.gb.p)}}));
  if(d.start)start=d.start}}catch(e){}
 
 /* ---------- 카메라 / 리사이즈 ---------- */
@@ -280,9 +281,9 @@ function mkChild(e,nm){
 function addFish(o){const f=mk(o);fish.push(f);sel=f.id;selE=null;delArm=false;fx.push({x:f.x,y:f.y,t:0,k:'pop'});save();ui();panel();toast((o.mut?'돌연변이가 태어났어요! ':'')+`${f.name}이(가) 어항에 왔어요!`+(f.inh?' '+f.inh:''),f.inh?6000:3000)}
 
 /* ---------- 커스터마이징 렌더 ---------- */
-const SL=[['bt','몸통 종류',0,4,.05],['bh','몸통 높이',.5,1.6,.01],['bl','몸통 길이',.6,1.5,.01],['et','눈 종류',0,7,1],['es','눈 크기',.3,1.5,.01],['ex','눈 위치 (앞뒤)',0,1,.01],['ey','눈 위치 (위아래)',0,1,.01],['mt','입 종류',0,7,1],['ms','입 크기',0,1,.01],['my','입 위치',0,1,.01],['ft','꼬리 종류',0,5,1],['ts','꼬리 크기',.3,1.6,.01],['dt','등지느러미 종류',0,4,1],['fs','등지느러미 크기',0,1.6,.01],['fp','등지느러미 위치',0,1,.01],['sf','가슴지느러미 크기',0,1.6,.01],['sp','가슴지느러미 위치',0,1,.01],['pa','무늬 종류',0,6,1],['ps','무늬 크기',.5,2,.01],['lw','선 굵기',1,8,.1]];
+const SL=[['bt','몸통 종류',0,4,.05],['bh','몸통 높이',.5,1.6,.01],['bl','몸통 길이',.6,1.5,.01],['et','눈 종류',0,7,1],['es','눈 크기',.3,1.5,.01],['ex','눈 위치 (앞뒤)',0,1,.01],['ey','눈 위치 (위아래)',0,1,.01],['mt','입 종류',0,6,1],['ms','입 크기',0,1,.01],['my','입 위치',0,1,.01],['ft','꼬리 종류',0,5,1],['ts','꼬리 크기',.3,1.6,.01],['dt','등지느러미 종류',0,4,1],['fs','등지느러미 크기',0,1.6,.01],['fp','등지느러미 위치',0,1,.01],['sf','가슴지느러미 크기',0,1.6,.01],['sp','가슴지느러미 위치',0,1,.01],['pa','무늬 종류',0,6,1],['ps','무늬 크기',.5,2,.01],['lw','선 굵기',1,8,.1]];
 const SLm=Object.fromEntries(SL.map(s=>[s[0],s]));
-const P0={bt:0,bh:1,bl:1,et:2,es:1,ex:.45,ey:.4,mt:1,ms:.6,my:.5,ft:1,ts:1,dt:1,fs:.8,fp:.5,sf:.6,sp:.5,pa:0,ps:1,lw:2.5,bc:'#9ad6f0',lc:'#2b2a63',fc:'#8bcbe8',pc:'#5b8fb9'};
+const P0={mv:2,bt:0,bh:1,bl:1,et:2,es:1,ex:.45,ey:.4,mt:1,ms:.6,my:.5,ft:1,ts:1,dt:1,fs:.8,fp:.5,sf:.6,sp:.5,pa:0,ps:1,lw:2.5,bc:'#9ad6f0',lc:'#2b2a63',fc:'#8bcbe8',pc:'#5b8fb9'};
 const AR=[{l:55,h:36,p:[0,.66,.87,.97,1,.97,.87,.66,0]},{l:80,h:13,p:[0,.7,.92,1,1,.98,.9,.72,.3]},{l:66,h:24,p:[0,.45,.8,1,.98,.8,.55,.35,.18]},{l:50,h:52,p:[0,.55,.85,1,.9,.62,.38,.18,.05]},{l:44,h:44,p:[0,.75,.93,.99,1,.99,.93,.75,0]}];
 const arch=bt=>{const i=Math.min(3,Math.floor(bt)),f=bt-i,A=AR[i],B=AR[i+1],m=(x,y)=>x+(y-x)*f;return{l:m(A.l,B.l),h:m(A.h,B.h),p:A.p.map((v,k)=>m(v,B.p[k]))}};
 const prof=(P,u)=>{const t=cl(u,0,1)*8,i=Math.min(7,Math.floor(t)),f=(1-Math.cos((t-i)*Math.PI))/2;return P[i]+(P[i+1]-P[i])*f};
@@ -312,6 +313,12 @@ function render(g,w,h,p,pat,fr,hit){
   else{D=[];for(let k=0;k<=5;k++){const u=u1+(u2-u1)*k/5,v=u1+(u2-u1)*(k+.5)/5;D.push([xAt(u),tY(u)+2]);if(k<5)D.push([xAt(v),tY(v)-18*fs])}}
   S(D,20);if(HP)HP.dors=poly(D)}
  if(HP&&!HP.dors)HP.dors=circ(xAt(cu),tY(cu)-6,11);
+ if(Math.round(p.mt)===3){const dy=(p.my-.5)*b*.8;let u=0;while(u<.5&&b*prof(A.p,u)<Math.abs(dy))u+=.01;
+  const ml=3+p.ms*13,x0=xAt(u)+j(11)*.4,my=Y+dy+j(12)*.4,hh=ml*.6,r=hh/2,cx0=x0-ml*.45;
+  /* 위·아래 입술을 반원 두 개로: 앞에서 보면 'ε'(3을 뒤집은 모양) */
+  g.fillStyle=p.bc;g.lineWidth=Math.max(1.5,p.lw*.8);g.beginPath();g.moveTo(x0+ml*.6,my-hh);g.lineTo(cx0,my-hh);
+  g.arc(cx0,my-r,r,-Math.PI/2,Math.PI/2,true);g.arc(cx0,my+r,r,-Math.PI/2,Math.PI/2,true);g.lineTo(x0+ml*.6,my+hh);g.closePath();g.fill();g.stroke();
+  g.beginPath();g.moveTo(cx0,my);g.lineTo(cx0+ml*.35,my);g.stroke();if(HP)HP.mouth=circ(cx0,my,Math.max(8,ml*.8))}
  const bp=[];for(let k=0;k<=22;k++){const u=k/22;bp.push([xAt(u),tY(u)])}for(let k=21;k>=1;k--){const u=k/22;bp.push([xAt(u),bY(u)])}
  const bq=bp.map((s,i)=>[s[0]+j(i+100),s[1]+j(i+140)]);
  g.fillStyle=p.bc;path(bq,true);g.fill();if(HP)HP.body=poly(bq);
@@ -337,12 +344,12 @@ function render(g,w,h,p,pat,fr,hit){
  else if(et===5){g.moveTo(ex-r*1.3,ey+r*.5);g.quadraticCurveTo(ex,ey-r*1.5,ex+r*1.3,ey+r*.5);g.stroke()}
  else if(et===6){g.fillStyle='#fff';g.arc(ex,ey,r*2.1,0,6.3);g.fill();g.stroke();g.beginPath();g.fillStyle=p.lc;g.arc(ex-r*.6,ey,r*1.1,0,6.3);g.fill();g.beginPath();g.fillStyle='#fff';g.arc(ex-r*.9,ey-r*.4,r*.35,0,6.3);g.fill()}
  else{g.arc(ex,ey+r*.2,r*.9,0,6.3);g.fill();g.beginPath();g.moveTo(ex-r*1.5,ey-r*.5);g.lineTo(ex+r*1.3,ey-r*1.8);g.stroke()}
- const mt=Math.round(p.mt),dy=(p.my-.5)*b*.8;let u=0;while(u<.5&&b*prof(A.p,u)<Math.abs(dy))u+=.01;
- const mx=xAt(u)+3+j(11)*.4,my=Y+dy+j(12)*.4,ml=3+p.ms*13;if(HP)HP.mouth=circ(mx+ml*.5,my,Math.max(8,ml*.8));g.lineWidth=Math.max(1.5,p.lw*.8);g.fillStyle='#fff';g.beginPath();
+ const mt=[0,5,2,3,4,6,7][cl(Math.round(p.mt),0,6)],dy=(p.my-.5)*b*.8;let u=0;while(u<.5&&b*prof(A.p,u)<Math.abs(dy))u+=.01;
+ const mx=xAt(u)+3+j(11)*.4,my=Y+dy+j(12)*.4,ml=3+p.ms*13;if(HP&&mt!==3)HP.mouth=circ(mx+ml*.5,my,Math.max(8,ml*.8));g.lineWidth=Math.max(1.5,p.lw*.8);g.fillStyle='#fff';g.beginPath();
  if(mt===0){}
  else if(mt===1){g.moveTo(mx,my);g.quadraticCurveTo(mx+ml*.5,my+ml*.35,mx+ml,my);g.stroke()}
  else if(mt===2){g.ellipse(mx+ml*.2,my,ml*.3,ml*.4,0,0,6.3);g.fill();g.stroke()}
- else if(mt===3){g.fillStyle=p.bc;g.ellipse(mx-ml*.15,my,ml*.55,ml*.35,0,0,6.3);g.fill();g.stroke();g.beginPath();g.moveTo(mx+ml*.2,my);g.lineTo(mx+ml*.9,my);g.stroke()}
+ else if(mt===3){}
  else if(mt===4){g.moveTo(mx,my);g.lineTo(mx+ml*1.3,my);g.stroke();for(let k=0;k<4;k++){const x=mx+ml*(.1+k*.3);g.beginPath();g.moveTo(x,my);g.lineTo(x+ml*.14,my+ml*.5);g.lineTo(x+ml*.28,my);g.closePath();g.fill();g.stroke()}}
  else if(mt===5){g.moveTo(mx,my-ml*.15);g.quadraticCurveTo(mx+ml*.6,my+ml*.8,mx+ml*1.2,my-ml*.35);g.stroke()}
  else if(mt===6){g.fillStyle='#e8707a';g.moveTo(mx,my);g.lineTo(mx+ml*1.3,my-ml*.55);g.lineTo(mx+ml*1.3,my+ml*.7);g.closePath();g.fill();g.stroke()}
@@ -398,7 +405,7 @@ function mark(){document.querySelectorAll('#sizes .btn').forEach(b=>b.classList.
 document.querySelectorAll('#tools .btn').forEach(b=>b.onclick=()=>{tool=b.dataset.t;mark()});
 document.querySelectorAll('#sex .btn').forEach(b=>b.onclick=()=>{sexv=b.dataset.s;document.querySelectorAll('#sex .btn').forEach(x=>x.classList.toggle('on',x===b))});
 /* 커스터마이징 슬라이더 */
-const NM={et:['없음','점','동그라미','졸린 눈','반짝 눈','웃는 눈','붕어눈','화난 눈'],mt:['없음','작은 입','뻐끔 입','튀어나온 입','날카로운 이빨','활짝 웃는 입','쩍 벌린 입','뾰족 부리'],ft:['없음','삼각 꼬리','부채 꼬리','제비 꼬리','리본 꼬리','채찍 꼬리'],dt:['없음','낮은 곡선','높은 삼각','길게 이어진','가시'],pa:['없음','점박이','세로 줄무늬','가로 줄무늬','큰 얼룩','대각 줄무늬','비늘'],bt:['기본 물고기','장어','상어','가오리','복어']};
+const NM={et:['없음','점','동그라미','졸린 눈','반짝 눈','웃는 눈','붕어눈','화난 눈'],mt:['없음','웃는 입','뻐끔 입','튀어나온 입','날카로운 이빨','쩍 벌린 입','뾰족 부리'],ft:['없음','삼각 꼬리','부채 꼬리','제비 꼬리','리본 꼬리','채찍 꼬리'],dt:['없음','낮은 곡선','높은 삼각','길게 이어진','가시'],pa:['없음','점박이','세로 줄무늬','가로 줄무늬','큰 얼룩','대각 줄무늬','비늘'],bt:['기본 물고기','장어','상어','가오리','복어']};
 function lab(){document.querySelectorAll('#cust [data-k]').forEach(i=>{const b=i.parentNode.querySelector('b'),n=NM[i.dataset.k];if(b&&n)b.textContent=n[cl(Math.round(i.value),0,n.length-1)]})}
 SL.forEach(([k,l,a,b,st])=>{const L=document.createElement('label');L.innerHTML=`<span>${l}${NM[k]?' · <b></b>':''}</span><input type="range" min="${a}" max="${b}" step="${st}" value="${P0[k]}" data-k="${k}" aria-label="${l}">`;$('#cust').append(L)});$('#cols').append($('#cust [data-k="lw"]').parentNode);lab();
 function onCust(e){const t=e.target;if(t.dataset.k){P[t.dataset.k]=+t.value;lab()}else if(t.id==='bc')P.bc=t.value;else if(t.id==='lc')P.lc=t.value;else if(t.id==='fc')P.fc=t.value;else if(t.id==='pc')P.pc=t.value;prv()}
