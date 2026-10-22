@@ -436,8 +436,16 @@ const tg=()=>mode==='d'?{c:pc,s:stk.d}:{c:patc,s:stk.c};
 const padw=$('#padw'),pos=e=>{const r=padw.getBoundingClientRect();return[(e.clientX-r.left)*420/r.width,(e.clientY-r.top)*280/r.height]};
 function stroke(a,b){const g=tg().c;g.globalCompositeOperation=tool==='e'?'destination-out':'source-over';g.strokeStyle=col;g.lineWidth=tool==='e'?lw*2.5:lw;g.lineCap=g.lineJoin='round';g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0]+.01,b[1]);g.stroke();if(mode==='c')prv();else wob()}
 padw.onpointerdown=e=>{e.preventDefault();if(mode==='c'&&tool==='s'){selPart(pick(...pos(e)));return}padw.setPointerCapture(e.pointerId);const T=tg();T.s.push(T.c.getImageData(0,0,420,280));if(T.s.length>25)T.s.shift();lp=pos(e);
- if(tool==='f'&&mode==='d'){strokes.push([col,lw]);flood(lp[0],lp[1]);return}drawing=true;if(tool!=='e'&&mode==='d')strokes.push([col,lw]);stroke(lp,lp)};
-padw.onpointermove=e=>{if(mode==='c'&&tool==='s'){const k=pick(...pos(e));padw.style.cursor=k?'pointer':'default';if(k!==hovP){hovP=k;prv()}return}padw.style.cursor='';if(!drawing)return;const p=pos(e);stroke(lp,p);lp=p};padw.onpointerup=padw.onpointercancel=()=>{drawing=false};
+ if(tool==='f'&&mode==='d'){strokes.push([col,lw]);flood(lp[0],lp[1]);return}drawing=true;if(tool!=='e'&&mode==='d')strokes.push([col,lw]);stroke(lp,lp);if(tool==='p')penS.start()};
+padw.onpointermove=e=>{if(mode==='c'&&tool==='s'){const k=pick(...pos(e));padw.style.cursor=k?'pointer':'default';if(k!==hovP){hovP=k;prv()}return}padw.style.cursor='';if(!drawing)return;const p=pos(e);penS.move(Math.hypot(p[0]-lp[0],p[1]-lp[1]));stroke(lp,p);lp=p};padw.onpointerup=padw.onpointercancel=()=>{drawing=false;penS.stop()};
+/* 펜 사각사각: 긴 낙서 구간에서 재생하고, 펜이 움직이는 동안만 들리게(멈추거나 떼면 바로 잦아듦)
+   → 짧게 그으면 짧게, 길게 그으면 길게 들림 */
+const penS=(()=>{const a=new Audio('assets/voicebosch-pencil-scribbling-200560.mp3'),R=[[1.3,16.4],[25.1,38.7],[40.8,43],[45.3,47.7]];a.preload='auto';
+ let on=false,lv=0,tg=0,last=0,seg=null,id=0;
+ const jump=()=>{seg=R[0|Math.random()*R.length];try{a.currentTime=rnd(seg[0],Math.max(seg[0],seg[1]-1.5))}catch(e){}};
+ const loop=()=>{const v=(+$('#vol').value||0)/100;if(performance.now()-last>90)tg=0;lv+=(tg-lv)*(tg>lv?.5:.25);a.volume=cl(lv*v*.8,0,1);
+  if(seg&&a.currentTime>seg[1]-.05)jump();if(!on&&lv<.01){clearInterval(id);id=0;a.pause()}};
+ return{start(){on=true;jump();a.play().catch(()=>{});if(!id)id=setInterval(loop,30)},move(d){last=performance.now();tg=tg*.6+cl(d/6,.25,1)*.4},stop(){on=false;tg=0}}})();
 $('#undo').onclick=()=>{const T=tg(),s=T.s.pop();if(s){T.c.globalCompositeOperation='source-over';T.c.putImageData(s,0,0);if(mode==='c')prv();else wob()}};
 $('#clr').onclick=()=>{const T=tg();T.s.push(T.c.getImageData(0,0,420,280));T.c.clearRect(0,0,420,280);if(mode==='c')prv();else wob()};
 function flood(sx,sy){const w=420,h=280,im=pc.getImageData(0,0,w,h),d=im.data;sx=cl(sx|0,0,w-1);sy=cl(sy|0,0,h-1);
