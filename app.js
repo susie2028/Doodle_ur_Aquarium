@@ -50,7 +50,7 @@ function sndPlay(){const v=(+$('#vol').value||0)/100;
 function fitPt(x,y,hw,hh){const rx=441-hw-14,ry=255-hh-14,dx=(x-641)/rx,dy=(y-380)/ry,d=Math.hypot(dx,dy);if(d>1){x=641+dx/d*rx;y=380+dy/d*ry}return[x,cl(y,215+hh,BOT-hh)]}
 /* 먹이를 먹을수록 자람: 50번이면 몸집(면적)이 15배 → 어항 절반 크기, 15칸을 혼자 차지 */
 const GROW=50,slot=f=>1+(MAX-1)*Math.min(f.ml|0,GROW)/GROW,used=()=>fish.reduce((a,f)=>a+slot(f),0)+eggs.length,full=()=>used()+1>MAX+1e-6;
-function size(f){const k=Math.min(125/f.w,100/f.h),g=(.55+.45*Math.min(1,age(f)/ADULT))*Math.sqrt(slot(f));let dw=f.w*k*g,dh=f.h*k*g;const c=Math.min(1,480/dw,260/dh);f.dw=dw*c;f.dh=dh*c}
+function size(f){const k=Math.min(125/f.w,100/f.h),g=Math.sqrt(slot(f));let dw=f.w*k*g,dh=f.h*k*g;const c=Math.min(1,480/dw,260/dh);f.dw=dw*c;f.dh=dh*c}
 function update(dt,now){
  for(const o of foods)o.c=0;
  for(const f of fish){if(!f.ok)continue;size(f);f.hu=Math.min(1,f.hu+dt/360);let tx,ty,sp=f.sp*(f.hu>=.75?.55:1),best=null,bd=1e9;
@@ -188,7 +188,7 @@ function state(f){const n=Date.now();
  if(f.lb&&n-f.lb<30000)return '알을 낳고 쉬는 중..';
  if(rdy(f,n)&&fish.some(o=>o!==f&&o.sex!==f.sex&&rdy(o,n)&&!kin(f,o)))return '짝을 찾는 중..';
  if(n-f.ate<25000)return '배불리 쉬는 중..';
- if(age(f)<ADULT)return '아직 아기라 졸졸 헤엄치는 중..';
+ 
  return '물을 떠다니는 중..'}
 function famTree(f){
  let u=0;const E=[],C=[];
