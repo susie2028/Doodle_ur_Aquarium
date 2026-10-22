@@ -3,7 +3,7 @@
 const D=window.DUA,$=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const W=2600,H=1700,BOTS=16,PELLETS=170,DASH=.35,COOL=3,EAT=1.18,INK='#2b2a63';
 const G=$('#game'),gc=$('#gc'),g=gc.getContext('2d');
-let CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
+let act=false,CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
 const tex=new Image();tex.src='assets/kiboecontor-paper-626781_1920.jpg';let texP=null;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -28,16 +28,23 @@ function botM(){const b=me?me.m:1;return Math.random()<.7?cl(b*rnd(.3,.85),.25,4
 const addPel=()=>pel.push({x:rnd(120,W-120),y:rnd(120,H-120),r:rnd(4,7),ph:rnd(0,6.3)});
 
 /* ---------- 시작 / 끝 ---------- */
-async function enter(){if(!G.hidden)return;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#gload').hidden=false;$('#gload').textContent='어항 속으로 풍덩!';$('#gover').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;
- requestAnimationFrame(()=>G.classList.add('on'));await sleep(850);if(!G.classList.contains('on'))return;
+async function enter(){if(!G.hidden)return;act=true;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#gload').hidden=false;$('#gload').textContent='어항 속으로 풍덩!';$('#gover').hidden=true;$('#gpick').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;
+ setTimeout(()=>G.classList.add('on'),20);await sleep(850);if(!act)return;
  if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<10;i++){const s=sprFromP(D.genP());if(s)spr.push(s);if(i%3===2)await sleep(0)}}
- if(!G.classList.contains('on'))return;$('#gload').textContent='내 물고기를 만들어 주세요';
- D.openGameDraw(r=>{if(!r){leave();return}myName=r.name;$('#gload').textContent='준비 중...';setTimeout(()=>{mySpr=r.p?sprFromP(r.p)||sprFromImg(r.img):sprFromImg(r.img);start()},30)})}
+ if(!act)return;const list=D.fishList();if(list.length)pick(list);else newFish()}
+/* 어항에 있는 물고기로 할지, 새로 만들지 고르기 */
+function pick(list){$('#gload').hidden=true;const b=$('#gpick');b.hidden=false;
+ b.innerHTML=`<h3>어떤 물고기로 할까요?</h3><p>어항에 있는 물고기를 고르거나 새로 만들어요</p><div class="gpl">${list.map((f,i)=>`<button data-i="${i}"><img src="${f.img}" alt=""><span>${esc(f.name)}</span></button>`).join('')}<button id="gnew" class="gnew"><b>+</b><span>새로 만들기</span></button></div>`;
+ b.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const f=list[+e.dataset.i];b.hidden=true;ready(f.name,()=>f.p?sprFromP(f.p)||sprFromImg(f.im):sprFromImg(f.im))});
+ $('#gnew').onclick=()=>{b.hidden=true;newFish()}}
+function newFish(){$('#gload').hidden=false;$('#gload').textContent='내 물고기를 만들어 주세요';
+ D.openGameDraw(r=>{if(!r){leave();return}ready(r.name,()=>r.p?sprFromP(r.p)||sprFromImg(r.img):sprFromImg(r.img))})}
+function ready(name,mk){myName=name;$('#gload').hidden=false;$('#gload').textContent='준비 중...';setTimeout(()=>{mySpr=mk();start()},30)}
 function start(){fish=[];pel=[];fx=[];over=false;bestRank=99;me=mkFish({x:W/2,y:H/2,m:1,spr:mySpr,name:myName,me:true});me.cd=0;bestM=1;fish.push(me);
  for(let i=0;i<BOTS;i++)fish.push(spawnBot());for(let i=0;i<PELLETS;i++)addPel();
  cam={x:me.x,y:me.y,z:zoomFor()};$('#gload').hidden=true;$('#gover').hidden=true;$('#grank').hidden=false;$('#gdash').hidden=false;G.classList.add('run');
  help(true);run=true;last=performance.now();uiT=0;hud(last);cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
-function leave(){run=false;cancelAnimationFrame(raf);G.classList.remove('on');D.zoomOut();help(false);setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
+function leave(){act=false;run=false;cancelAnimationFrame(raf);G.classList.remove('on');D.zoomOut();help(false);setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
 function help(on){let h=$('#ghelp');if(!on){if(h)h.remove();return}if(!h){h=document.createElement('div');h.id='ghelp';h.className='gbox';G.append(h)}h.textContent='마우스로 헤엄치기 · Space로 돌진 · 나보다 작은 물고기를 먹어요!';clearTimeout(help.t);help.t=setTimeout(()=>h.remove(),6000)}
 function gameOver(by){over=true;run=false;const r=$('#gover');r.hidden=false;
  r.innerHTML=`<h3>꿀꺽!</h3><p><b>${esc(by.name)}</b>에게 먹혔어요</p><p>최고 크기 <b>${Math.round(bestM*100)}</b> · 최고 순위 <b>${bestRank}위</b></p><div class="row"><button class="btn" id="gre">다시 하기</button><button class="btn" id="gout">어항으로</button></div>`;

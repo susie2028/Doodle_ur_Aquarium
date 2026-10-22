@@ -532,7 +532,7 @@ let rsA=0;$('#rs').onclick=()=>{const b=$('#rs');if(!rsA){rsA=setTimeout(()=>{rs
 /* ---------- 게임(game.js)과 공유 ---------- */
 function genP(){const p={...P0};for(const [k,,a,b,st] of SL){if(k==='lw')continue;const v=rnd(a,b);p[k]=st>=1?Math.round(v):Math.round(v*100)/100}
  p.bt=Math.round(cl(Math.round(rnd(0,4))+rnd(-.2,.2),0,4)*20)/20;p.lw=Math.round(rnd(1.5,4)*10)/10;p.bc=rc();p.lc=Math.random()<.5?'#2b2a63':dk(p.bc);p.fc=Math.random()<.6?rc():p.bc;p.pc=rc();if(Math.random()<.35)p.pa=0;return p}
-Object.assign(DUA,{render,stick,up,trimC,bbox,genP,rname:sx=>rname(sx),snd:()=>sndPlay(),toast,
+Object.assign(DUA,{fishList:()=>fish.filter(f=>f.ok).map(f=>({name:f.name,img:f.img,im:f.im,p:f.k==='c'&&f.p?f.p:null})),render,stick,up,trimC,bbox,genP,rname:sx=>rname(sx),snd:()=>sndPlay(),toast,
  openGameDraw(cb){openDraw();$('#mt').textContent='내 물고기 만들기';DUA.gameCb=cb},
  zoomIn(){camT={x:641,y:380,z:4}},zoomOut(){camT={x:641,y:350,z:1}}});
 

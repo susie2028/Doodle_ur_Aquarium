@@ -88,3 +88,7 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 #gdb{font-size:16px;padding:2px 12px;border:2.5px solid #2b2a63;border-radius:999px}
 #gover{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;padding:22px 34px;font-size:22px}#gover h3{margin:0 0 8px;font-size:34px}#gover p{margin:4px 0;font-weight:400}#gover .row{justify-content:center;margin-top:14px}
 #ghelp{position:absolute;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-weight:400;font-size:18px;white-space:nowrap}
+#gpick{left:50%;top:50%;transform:translate(-50%,-50%);width:min(660px,calc(100vw - 40px));text-align:center;padding:22px 26px}#gpick h3{margin:0 0 4px;font-size:30px}#gpick p{margin:0;font-weight:400;color:#77778f;font-size:18px}
+.gpl{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-height:48vh;overflow:auto;margin:16px 0 4px;padding:4px}
+.gpl button{width:116px;display:flex;flex-direction:column;align-items:center;gap:4px;border:2.5px solid #2b2a63;border-radius:14px;background:#fff;padding:8px 6px;cursor:pointer;font:700 18px Gaegu,sans-serif;color:#2b2a63;box-shadow:2px 3px 0 #2b2a63;transition:transform .12s}.gpl button:hover{transform:scale(1.06)}
+.gpl img{width:100%;height:58px;object-fit:contain}.gpl span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gnew b{font-size:40px;line-height:58px;height:58px}
