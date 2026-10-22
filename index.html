@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Doodle your Aquarium!</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<canvas id="c" aria-label="어항"></canvas>
+<svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" aria-hidden="true"><filter id="cut" x="-30%" y="-45%" width="160%" height="190%" color-interpolation-filters="sRGB">
+<feMorphology in="SourceAlpha" operator="dilate" radius="12" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="d" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="w"/>
+<feFlood flood-color="#fff"/><feComposite in2="w" operator="in" result="pp"/>
+<feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="1" seed="9"/><feColorMatrix values="0 0 0 0 .3  0 0 0 0 .3  0 0 0 0 .35  0 0 0 -.12 .08"/><feComposite in2="w" operator="in" result="gr"/>
+<feOffset in="w" dx="2" dy="3" result="o"/><feFlood flood-color="#14142a" flood-opacity=".16"/><feComposite in2="o" operator="in" result="sh"/>
+<feMerge><feMergeNode in="sh"/><feMergeNode in="pp"/><feMergeNode in="gr"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="cutS" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+<feMorphology in="SourceAlpha" operator="dilate" radius="4" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="d" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" result="w"/>
+<feFlood flood-color="#fff"/><feComposite in2="w" operator="in" result="pp"/>
+<feOffset in="w" dx="2" dy="3" result="o"/><feFlood flood-color="#14142a" flood-opacity=".18"/><feComposite in2="o" operator="in" result="sh"/>
+<feMerge><feMergeNode in="sh"/><feMergeNode in="pp"/><feMergeNode in="SourceGraphic"/></feMerge></filter></svg>
+<div id="ttl" class="paper">Doodle <small>your</small><br>Aquarium!</div>
+<div id="day" class="paper"></div>
+<nav id="nav"><button class="cb" id="bd" data-tip="물고기 추가하기" data-ic="fish" aria-label="물고기 그리기"></button><button class="cb" id="bf" data-tip="먹이 주기" data-ic="food" aria-label="먹이 주기"></button><button class="cb" id="bl" data-tip="물고기 정보" data-ic="fishl" aria-label="물고기 목록"></button><button class="cb" id="bs" data-tip="설정" data-ic="gear" aria-label="설정"></button></nav>
+<button class="cb" id="bm" data-tip="창 모드" data-ic="mini" aria-label="창 모드"></button>
+<button id="minimsg" class="btn" hidden>미니 모드로 보는 중 · 여기를 누르면 돌아와요</button>
+<div id="panel" hidden></div><div id="toast" role="status"></div>
+<div id="empty" hidden><p>물고기가 없어요.<br>버튼을 눌러 새로 추가해 주세요.</p><button class="btn" id="eadd">물고기 추가하기</button></div>
+<div id="hint">휠로 확대 · 드래그로 이동 · 물고기를 클릭해 보세요</div>
+
+<div class="modal" id="m" hidden><div class="sheet" role="dialog" aria-modal="true">
+<button class="x" id="mx" data-ic="x" aria-label="닫기"></button>
+<div class="hd"><h2 id="mt">물고기 그리기</h2><span class="tabs" id="tabs"><button class="btn on" data-tab="d">그리기</button><button class="btn" data-tab="c">커스터마이징</button></span></div>
+<div class="body"><div class="L"><div class="ti"><button class="btn" hidden id="rf" aria-label="랜덤 물고기"><span class="ico" data-ic="dice"></span> 랜덤 물고기</button><button id="clr" data-ic="trash" aria-label="전체 지우기"></button><button id="undo" data-ic="undo" aria-label="실행 취소"></button></div>
+<div class="pad" id="padw"><canvas id="pad" width="420" height="280"></canvas><canvas id="pv" width="420" height="280" hidden></canvas><canvas id="pw" width="420" height="280"></canvas>
+<svg class="gd" id="gd" viewBox="0 0 420 280"><ellipse cx="170" cy="150" rx="120" ry="72" stroke-dasharray="9 9"/><path d="M285 150l70-48v96z" stroke-dasharray="9 9"/></svg><span class="g l">← 머리</span><span class="g r">꼬리 →</span></div><div id="cols" hidden>선 색 <input type="color" id="lc" value="#2b2a63" aria-label="선 색"></div></div>
+<div class="R"><div class="row" style="align-items:center"><input type="text" id="nm" maxlength="10" placeholder="물고기 이름" aria-label="물고기 이름"><button class="dc" id="dn" data-ic="dice" aria-label="랜덤 이름"></button></div>
+<div class="row" id="sex"><button class="btn on" data-s="M" aria-label="수컷">♂</button><button class="btn" data-s="F" aria-label="암컷">♀</button></div>
+<div id="cust" hidden><p id="cpt"></p><label data-c="bc"><span>몸 색</span><input type="color" id="bc" value="#9ad6f0" aria-label="몸 색"></label><label data-c="pc"><span>무늬 색</span><input type="color" id="pc" value="#5b8fb9" aria-label="무늬 색"></label><label data-c="fc"><span>지느러미 색</span><input type="color" id="fc" value="#8bcbe8" aria-label="지느러미 색"></label></div>
+<div class="row" id="tools"><button class="btn" data-t="s" id="tsel" style="display:none">부위 선택</button><button class="btn on" data-t="p">펜</button><button class="btn" data-t="f" id="tf">채우기</button><button class="btn" data-t="e">지우개</button></div>
+<div class="row" id="sizes"></div>
+<canvas id="sv" width="160" height="64" aria-label="색 선택"></canvas><input type="range" id="hue" min="0" max="360" value="240" aria-label="색조">
+<button id="ok" data-ic="fishk" aria-label="어항에 넣기"></button></div></div></div></div>
+
+<div class="modal" id="lm" hidden><div class="sheet" style="max-width:520px"><button class="x" id="lx" data-ic="x" aria-label="닫기"></button><h2>물고기 목록</h2><div id="lst"></div></div></div>
+<div class="modal" id="sm" hidden><div class="sheet" style="max-width:380px"><button class="x" id="sx" data-ic="x" aria-label="닫기"></button><h2>설정</h2>
+<p>소리 크기 <input type="range" id="vol" min="0" max="100" value="50" style="width:50%;accent-color:#2b2a63"></p>
+<p><label class="tg"><input type="checkbox" id="egg" checked> 알 낳기</label></p>
+<p><button class="btn" id="rs">어항 리셋</button></p></div></div>
+
+<script src="app.js"></script>
+</body></html>
