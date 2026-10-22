@@ -6,6 +6,8 @@ const G=$('#game'),gc=$('#gc'),g=gc.getContext('2d');
 let mode='solo',ws=null,you=0,myImg='',myP=null,inT=0,wantDash=false,act=false,CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
 const tex=new Image();tex.src='assets/kiboecontor-paper-626781_1920.jpg';let texP=null;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+// 봇 모양은 정해진 씨앗으로 만들어서 멀티에서도 모두에게 같게 보이게
+const seeded=(sd,fn)=>{const R=Math.random;let x=sd*9301+49297;Math.random=()=>(x=(x*16807)%2147483647)/2147483647;try{return fn()}finally{Math.random=R}};
 // 멀티 서버 주소: ?server=wss://... 로 지정하거나, 서버에서 연 페이지면 같은 주소의 /ws
 const WSURL=new URLSearchParams(location.search).get('server')||(location.protocol.startsWith('http')?(location.protocol==='https:'?'wss://':'ws://')+location.host+'/ws':null);
 
@@ -32,7 +34,7 @@ const addPel=()=>pel.push({x:rnd(120,W-120),y:rnd(120,H-120),r:rnd(4,7),ph:rnd(0
 /* ---------- 시작 / 끝 ---------- */
 async function enter(){if(!G.hidden)return;act=true;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#gload').hidden=false;$('#gload').textContent='어항 속으로 풍덩!';$('#gover').hidden=true;$('#gpick').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;
  setTimeout(()=>G.classList.add('on'),20);await sleep(850);if(!act)return;
- if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<10;i++){const s=sprFromP(D.genP());if(s)spr.push(s);if(i%3===2)await sleep(0)}}
+ if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<10;i++){const s=sprFromP(seeded(i+1,D.genP));if(s)spr.push(s);if(i%3===2)await sleep(0)}}
  if(!act)return;chooseMode()}
 function chooseMode(){$('#gload').hidden=true;const b=$('#gpick');b.hidden=false;
  b.innerHTML=`<h3>어떻게 놀까요?</h3><p>혼자 봇 물고기들과 하거나, 다른 사람들과 같은 어항에서 해요</p><div class="gpl gmode"><button id="gsolo"><i>${$('#bd svg').outerHTML}</i><span>솔로 모드</span></button><button id="gmulti" ${WSURL?'':'disabled'}><i>${$('#bgm svg').outerHTML}</i><span>멀티 참가</span></button></div>${WSURL?'':'<p class="gnote">멀티는 서버 주소로 열었을 때만 할 수 있어요</p>'}`;
