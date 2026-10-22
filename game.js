@@ -43,7 +43,7 @@ function pick(list){$('#gload').hidden=true;const b=$('#gpick');b.hidden=false;
  b.innerHTML=`<h3>어떤 물고기로 할까요?</h3><p>어항에 있는 물고기를 고르거나 새로 만들어요</p><div class="gpl">${list.map((f,i)=>`<button data-i="${i}"><img src="${f.img}" alt=""><span>${esc(f.name)}</span></button>`).join('')}<button id="gnew" class="gnew"><b>+</b><span>새로 만들기</span></button></div>`;
  b.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const f=list[+e.dataset.i];b.hidden=true;myImg=f.img;myP=f.p;ready(f.name,()=>f.p?sprFromP(f.p)||sprFromImg(f.im):sprFromImg(f.im))});
  $('#gnew').onclick=()=>{b.hidden=true;newFish()}}
-function newFish(){$('#gload').hidden=false;$('#gload').textContent='내 물고기를 만들어 주세요';
+function newFish(){$('#gpick').hidden=true;$('#gload').hidden=false;$('#gload').textContent='내 물고기를 만들어 주세요';
  D.openGameDraw(r=>{if(!r){leave();return}try{myImg=r.img.toDataURL('image/png')}catch(e){myImg=''}myP=r.p;ready(r.name,()=>r.p?sprFromP(r.p)||sprFromImg(r.img):sprFromImg(r.img))})}
 function ready(name,mk){myName=name;$('#gload').hidden=false;$('#gload').textContent='준비 중...';setTimeout(()=>{mySpr=mk();mode==='multi'?startMulti():start()},30)}
 function start(){mode='solo';fish=[];pel=[];fx=[];over=false;bestRank=99;me=mkFish({x:W/2,y:H/2,m:1,spr:mySpr,name:myName,me:true});me.cd=0;bestM=1;fish.push(me);
