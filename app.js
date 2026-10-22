@@ -30,10 +30,10 @@ let camT=null;
 function clampCam(){const k=s0*cam.z,hx=Math.max(0,(982-CW/k)/2),hy=Math.max(0,(640-CH/k)/2);cam.x=cl(cam.x,641-hx,641+hx);cam.y=cl(cam.y,350-hy,350+hy)}
 function camStep(dt){if(!camT)return;const a=Math.min(1,dt*6);cam.x+=(camT.x-cam.x)*a;cam.y+=(camT.y-cam.y)*a;cam.z+=(camT.z-cam.z)*a;clampCam();if(Math.abs(camT.x-cam.x)+Math.abs(camT.y-cam.y)+Math.abs(camT.z-cam.z)<.5)camT=null}
 function focusFish(o){sel=o.id;selE=null;delArm=false;camT={x:o.x,y:o.y,z:Math.max(cam.z,2)};panel()}
-function resize(){const r=cv.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);CW=r.width;CH=r.height;cv.width=CW*d;cv.height=CH*d;s0=Math.min(CW/982,CH/640)*.86;clampCam();$('#hint').style.top=Math.max(48,CH/2-292*s0-10)+'px';$('#empty').style.top=(CH/2+20*s0)+'px'}
+function resize(){const r=cv.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);CW=r.width;CH=r.height;cv.width=CW*d;cv.height=CH*d;s0=Math.min(CW/982,CH/640)*.86;clampCam();$('#empty').style.top=(CH/2+20*s0)+'px'}
 addEventListener('resize',resize);
 const w2=e=>{const r=cv.getBoundingClientRect(),k=s0*cam.z;return{x:(e.clientX-r.left-CW/2)/k+cam.x,y:(e.clientY-r.top-CH/2)/k+cam.y}};
-cv.addEventListener('wheel',e=>{e.preventDefault();camT=null;const b=w2(e),k0=s0*cam.z;cam.z=cl(cam.z*Math.exp(-e.deltaY*.0015),1,4);const k=s0*cam.z,r=cv.getBoundingClientRect();cam.x=b.x-(e.clientX-r.left-CW/2)/k;cam.y=b.y-(e.clientY-r.top-CH/2)/k;clampCam();$('#hint').style.opacity=0},{passive:false});
+cv.addEventListener('wheel',e=>{e.preventDefault();camT=null;const b=w2(e),k0=s0*cam.z;cam.z=cl(cam.z*Math.exp(-e.deltaY*.0015),1,4);const k=s0*cam.z,r=cv.getBoundingClientRect();cam.x=b.x-(e.clientX-r.left-CW/2)/k;cam.y=b.y-(e.clientY-r.top-CH/2)/k;clampCam()},{passive:false});
 
 /* ---------- 소리: 물고기가 움직이기 시작할 때 보글보글 (짧게 잘라서 재생) ---------- */
 const SND='assets/freesound_community-bubbles-003-6397.mp3',sndP=[...Array(6)].map(()=>{const a=new Audio(SND);a.preload='auto';return a});let sndI=0,sndOn=false;
@@ -512,6 +512,5 @@ let rsA=0;$('#rs').onclick=()=>{const b=$('#rs');if(!rsA){rsA=setTimeout(()=>{rs
 new ResizeObserver(resize).observe(cv);resize();ui();
 setInterval(()=>{breedCheck();ageTxt();ui()},1000);setInterval(save,6000);
 addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
-setTimeout(()=>{$('#hint').style.opacity=0},7000);
 last=performance.now();sched();
 })();
