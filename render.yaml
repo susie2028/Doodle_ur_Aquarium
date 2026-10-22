@@ -1,0 +1,9 @@
+# Render 무료 배포 설정: 웹페이지 + 미니게임 멀티 서버를 한 번에 띄움
+services:
+  - type: web
+    name: doodle-aquarium
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: node server/server.js
+    healthCheckPath: /
