@@ -40,7 +40,10 @@ cv.addEventListener('wheel',e=>{e.preventDefault();camT=null;const b=w2(e),k0=s0
 const SND='assets/freesound_community-bubbles-003-6397.mp3',sndP=[...Array(6)].map(()=>{const a=new Audio(SND);a.preload='auto';return a});let sndI=0,sndOn=false;
 /* 브라우저는 클릭/키 입력 전에는 소리를 막으므로, 첫 입력 때 미리 한 번씩 재생해 풀어 둠 */
 function sndUnlock(){if(sndOn)return;sndOn=true;for(const a of sndP){a.muted=true;a.play().then(()=>{if(!a.busy)a.pause();a.muted=false}).catch(()=>{a.muted=false})}}
-addEventListener('pointerdown',sndUnlock,{capture:true});addEventListener('keydown',sndUnlock,{capture:true});
+addEventListener('pointerdown',sndUnlock,{capture:true});
+/* 버튼을 누를 때마다 '딸깍' (pick 소리에서 소리 나는 0.2초만 잘라 둔 파일) */
+const clkP=[...Array(4)].map(()=>{const a=new Audio('assets/pick-click.wav');a.preload='auto';return a});let clkI=0;
+addEventListener('pointerdown',e=>{const v=(+$('#vol').value||0)/100;if(v<=0||!e.target.closest||!e.target.closest('button'))return;const a=clkP[clkI=(clkI+1)%clkP.length];try{a.currentTime=0}catch(_){}a.volume=Math.min(1,v);a.play().catch(()=>{})},{capture:true});addEventListener('keydown',sndUnlock,{capture:true});
 function blub(f){if(f){bsp(f.x+f.dir*f.dw*.48,f.y+rnd(-3,3),rnd(3,6));if(Math.random()<.25)bsp(f.x+f.dir*(f.dw*.48+3),f.y-10,rnd(2.5,4.5))}sndPlay()}
 function sndPlay(){const v=(+$('#vol').value||0)/100;
  if(v<=0)return;if(!sndOn)return;
