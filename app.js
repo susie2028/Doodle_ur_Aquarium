@@ -103,9 +103,11 @@ const w2=e=>{const r=cv.getBoundingClientRect(),k=s0*cam.z;return{x:(e.clientX-r
 cv.addEventListener('wheel',e=>{e.preventDefault();if(follow){followZ=cl(followZ*Math.exp(-e.deltaY*.0015),Math.min(1,zFit()),4);return}camT=null;const b=w2(e),k0=s0*cam.z;cam.z=cl(cam.z*Math.exp(-e.deltaY*.0015),Math.min(1,zFit()),4);const k=s0*cam.z,r=cv.getBoundingClientRect();cam.x=b.x-(e.clientX-r.left-CW/2)/k;cam.y=b.y-(e.clientY-r.top-CH/2)/k;clampCam()},{passive:false});
 
 /* ---------- 소리: 물고기가 움직이기 시작할 때 보글보글 (짧게 잘라서 재생) ---------- */
-const SND='assets/freesound_community-bubbles-003-6397.mp3',sndP=[...Array(6)].map(()=>{const a=new Audio(SND);a.preload='auto';return a});let sndI=0,sndOn=false;
+const SND='assets/freesound_community-bubbles-003-6397.mp3',sndP=[...Array(6)].map(()=>{const a=new Audio(SND);a.preload='auto';return a});
+const SELECT_SND='assets/u_2fbuaev0zn-select-sound-121244.mp3',selectP=[...Array(4)].map(()=>{const a=new Audio(SELECT_SND);a.preload='auto';return a});
+let sndI=0,selectI=0,sndOn=false;
 /* 브라우저는 클릭/키 입력 전에는 소리를 막으므로, 첫 입력 때 미리 한 번씩 재생해 풀어 둠 */
-function sndUnlock(){if(sndOn)return;sndOn=true;for(const a of sndP){a.muted=true;a.play().then(()=>{if(!a.busy)a.pause();a.muted=false}).catch(()=>{a.muted=false})}}
+function sndUnlock(){if(sndOn)return;sndOn=true;for(const a of [...sndP,...selectP]){a.muted=true;a.play().then(()=>{if(!a.busy)a.pause();a.muted=false}).catch(()=>{a.muted=false})}}
 addEventListener('pointerdown',sndUnlock,{capture:true});
 /* 버튼을 누를 때마다 '딸깍' (pick 소리에서 소리 나는 0.2초만 잘라 둔 파일) */
 const clkP=[...Array(4)].map(()=>{const a=new Audio('assets/pick-click.wav');a.preload='auto';return a});let clkI=0;
@@ -115,6 +117,9 @@ function sndPlay(){const v=(+$('#vol').value||0)/100;
  if(v<=0)return;if(!sndOn)return;
  const a=sndP[sndI=(sndI+1)%sndP.length],len=rnd(.5,.9),peak=v*.6;clearInterval(a.fid);a.busy=true;a.muted=false;a.volume=0;try{a.currentTime=rnd(0,Math.max(0,(a.duration||7.5)-1.2))}catch(e){}
  a.play().then(()=>{const t0=performance.now();a.fid=setInterval(()=>{const t=(performance.now()-t0)/1000;if(t>=len){clearInterval(a.fid);a.pause();return}a.volume=peak*Math.min(1,t/.08,(len-t)/.25)},30)}).catch(()=>{})}
+function selectPlay(){const v=(+$('#vol').value||0)/100;
+ if(v<=0||!sndOn)return;
+ const a=selectP[selectI=(selectI+1)%selectP.length];a.pause();a.currentTime=0;a.volume=v;a.play().catch(()=>{})}
 
 /* ---------- 움직임 ---------- */
 function fitPt(x,y,hw,hh){const rx=441-hw-14,ry=255-hh-14,dx=(x-641)/rx,dy=(y-380)/ry,d=Math.hypot(dx,dy);if(d>1){x=641+dx/d*rx;y=380+dy/d*ry}return[x,cl(y,215+hh,BOT-hh)]}
@@ -231,7 +236,7 @@ let pdn=null;
 cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);const q=w2(e),L=loc(q),f=L&&!feed&&!pickO?fish.find(o=>o.ok&&!o.walk&&o.tk===L.tk&&Math.abs(L.x-o.x)<o.dw/2+6&&Math.abs(L.y-o.y)<o.dh/2+6):null;
  pdn={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,m:false,ht:f?setTimeout(()=>grab(f),250):0}};
 /* 물고기를 0.25초 꾹 누르면 집어 들고, 놓은 어항으로 이사 (자리가 없으면 제자리로) */
-function grab(f){if(!pdn||pdn.m)return;pdn.m=true;drag={f,ox:f.x,oy:f.y,otk:f.tk};f.drag=true;talk(f,'grab',true);cv.style.cursor='grabbing';sel=null;panel();bsp(f.x,f.y-f.dh/2,5,f.tk);sndPlay()}
+function grab(f){if(!pdn||pdn.m)return;pdn.m=true;drag={f,ox:f.x,oy:f.y,otk:f.tk};f.drag=true;talk(f,'grab',true);cv.style.cursor='grabbing';sel=null;panel();bsp(f.x,f.y-f.dh/2,5,f.tk);selectPlay()}
 const MOVE=['이사왔다!','새 집이다!','여기 좋다~','안녕 이웃들!','짐 풀어야지!'];
 /* 첨벙: 물방울이 튀어 올랐다 떨어지고, 물결 고리가 퍼짐 */
 function splash(f){fx.push({k:'splash',tk:f.tk,x:f.x,y:f.y,t:0,r:Math.max(30,f.dw*.5),d:[...Array(9)].map(()=>[rnd(-150,150),rnd(-260,-120),rnd(4,8)])});for(let i=0;i<5;i++)bsp(f.x+rnd(-f.dw*.4,f.dw*.4),f.y+rnd(-10,10),rnd(3,7),f.tk);sndPlay()}
@@ -590,7 +595,7 @@ document.querySelectorAll('#sex .btn').forEach(b=>b.onclick=()=>{sexv=b.dataset.
 /* 커스터마이징 슬라이더 */
 const NM={et:['없음','점','동그라미','졸린 눈','반짝 눈','웃는 눈','붕어눈','화난 눈'],mt:['없음','웃는 입','뻐끔 입','튀어나온 입','날카로운 이빨','쩍 벌린 입','뾰족 부리'],ft:['없음','삼각 꼬리','부채 꼬리','제비 꼬리','리본 꼬리','채찍 꼬리'],dt:['없음','낮은 곡선','높은 삼각','길게 이어진','가시'],pa:['없음','점박이','세로 줄무늬','가로 줄무늬','큰 얼룩','대각 줄무늬','비늘'],bt:['기본 물고기','장어','상어','가오리','복어']};
 function lab(){document.querySelectorAll('#cust [data-k]').forEach(i=>{const b=i.parentNode.querySelector('b'),n=NM[i.dataset.k];if(b&&n)b.textContent=n[cl(Math.round(i.value),0,n.length-1)]})}
-SL.forEach(([k,l,a,b,st])=>{const L=document.createElement('label');L.innerHTML=`<span>${l}${NM[k]?' · <b></b>':''}</span><input type="range" min="${a}" max="${b}" step="${st}" value="${P0[k]}" data-k="${k}" aria-label="${l}">`;$('#cust').append(L)});$('#cols').append($('#cust [data-k="lw"]').parentNode);lab();
+SL.forEach(([k,l,a,b,st])=>{const L=document.createElement('label');L.innerHTML=`<span>${l}${NM[k]?' · <b></b>':''}</span><input type="range" min="${a}" max="${b}" step="${st}" value="${P0[k]}" data-k="${k}" aria-label="${l}">`;$('#cust').append(L)});$('#cols').append($('#cust [data-k="lw"]').parentNode);$('#cols').append($('#accgo'));lab();
 function onCust(e){const t=e.target;if(t.dataset.k){P[t.dataset.k]=+t.value;lab()}else if(t.id==='bc')P.bc=t.value;else if(t.id==='lc')P.lc=t.value;else if(t.id==='fc')P.fc=t.value;else if(t.id==='pc')P.pc=t.value;prv()}
 $('#cust').oninput=onCust;$('#cols').oninput=onCust;
 const rc=()=>hsv2(rnd(0,360),rnd(.3,.65),rnd(.82,1));

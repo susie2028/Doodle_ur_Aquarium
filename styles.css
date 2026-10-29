@@ -51,22 +51,22 @@ svg{width:100%;height:100%;display:block}
 .sheet h2{margin:0 40px 6px 0;font-size:34px;display:inline-block}.hd{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:0 40px 12px 0}.hd h2{margin:0;line-height:1}.x{position:absolute;right:12px;top:12px;width:36px;height:36px;border:0;background:none;padding:4px;cursor:pointer}
 .tabs{display:inline-flex;gap:8px}.tabs .btn{font-size:19px;padding:5px 18px}
 .body{display:flex;gap:16px;flex-wrap:wrap}.L{flex:1 1 440px}.R{flex:1 1 360px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.ti{display:flex;gap:6px;justify-content:flex-end;height:32px}.ti button{width:32px;border:0;background:none;padding:2px;cursor:pointer}.ti #rf{width:auto;margin-right:auto;border:2.5px solid var(--ink);background:var(--card);padding:0 14px;font-size:18px;white-space:nowrap}.ti{margin-bottom:6px}
+.ti{display:flex;gap:6px;justify-content:flex-end;height:32px}.ti button{width:32px;border:0;background:none;padding:2px;cursor:pointer}.ti #rf{width:32px;margin-right:0}.ti{margin-bottom:6px}
 .pad{position:relative;border:3px solid var(--ink);border-radius:6px;background:#fffdf5;touch-action:none;cursor:crosshair;overflow:hidden}.pad canvas{display:block;width:100%;height:auto}#pw{position:absolute;inset:0;pointer-events:none}#pv{position:absolute;inset:0}
 .gd{position:absolute;inset:0;pointer-events:none;fill:none;stroke:#bbb7c9;stroke-width:3}.g{position:absolute;top:6px;color:#2b2a63;font-size:20px;pointer-events:none}.g.l{left:8px}.g.r{right:8px}
-input[type=text]{font:inherit;color:#2b2a63;background:#fffdf5;border:2.5px solid var(--ink);border-radius:999px;padding:0 14px;width:100%}
+input[type=text]{font:inherit;color:#2b2a63;background:transparent;border:0;border-bottom:2.5px solid var(--ink);border-radius:0;padding:0 4px;width:100%}
 .row{display:flex;gap:8px}.row .btn{flex:1;text-align:center;white-space:nowrap;padding-left:8px;padding-right:8px}.row .btn.sm{padding:0 6px}
 #cust{display:flex;flex-direction:column;gap:12px;min-height:260px;max-height:320px;overflow:auto;padding:10px 14px;margin:10px 0;font-size:18px;border:2.5px dashed #bbb7c9;border-radius:16px}
 #cust.empty{justify-content:center;align-items:center;text-align:center}#cust.empty #cpt{font-size:22px;color:var(--mute);margin:0}
 #cpt{margin:0 0 4px;font-size:20px;line-height:1.2}#cpt small{color:var(--mute);font-size:16px}
-#cust label{display:flex;align-items:center;gap:14px;justify-content:space-between}#cust input[type=range]{width:52%}#cust span{white-space:nowrap}#cust input[type=color]{width:52%;height:30px;border:2.5px solid var(--ink);border-radius:8px;background:none;padding:0}#cols label{display:flex;align-items:center;gap:8px}#cols input[type=range]{width:140px;height:auto;border:0;accent-color:#2b2a63}
+#cust label{display:flex;align-items:center;gap:14px;justify-content:space-between}#cust input[type=range]{width:52%}#cust span{white-space:nowrap}#cust input[type=color]{width:52%;height:30px;border:0;border-radius:8px;background:none;padding:0;overflow:hidden}#cust input[type=color]::-webkit-color-swatch-wrapper{padding:0}#cust input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}#cols label{display:flex;align-items:center;gap:8px}#cols input[type=range]{width:140px;height:auto;border:0;accent-color:#2b2a63}
 #sv{width:100%;flex:1 1 0;height:0;min-height:64px;border:2.5px solid var(--ink);cursor:crosshair;touch-action:none}
-/* 슬라이더 공통: 연한 트랙 + 남색 손잡이 (색조 바 제외) */
-input[type=range]:not(#hue){-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#dcdae8;border:0;padding:0;margin:8px 0;cursor:pointer}
+/* 슬라이더 공통: 남색 트랙 + 남색 손잡이 (색조 바 제외) */
+input[type=range]:not(#hue){-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:#2b2a63;border:0;padding:0;margin:8px 0;cursor:pointer}
 input[type=range]:not(#hue)::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#2b2a63;border:3px solid #fff;box-shadow:0 0 0 2px #2b2a63}
 input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#2b2a63;border:3px solid #fff;box-shadow:0 0 0 2px #2b2a63}
 #hue{width:100%;accent-color:#2b2a63;background:linear-gradient(90deg,red,#ff0,#0f0,#0ff,#00f,#f0f,red);height:10px;border-radius:5px;-webkit-appearance:none;appearance:none}
-#ok{position:absolute;right:16px;bottom:8px;width:56px;height:56px;border:0;background:none;padding:6px;cursor:pointer}#m .sheet{padding-bottom:66px}#cols{margin-top:8px;font-size:20px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}#cols input{width:44px;height:30px;border:2.5px solid var(--ink);border-radius:8px;background:none;padding:0;vertical-align:middle}#cust label span{flex:1;line-height:1.25}.dc{flex:none;width:42px;height:42px;border:2.5px solid var(--ink);border-radius:12px;background:var(--card);padding:6px;cursor:pointer}.ico{display:inline-block;width:22px;height:22px;vertical-align:middle}.row input[type=text]{flex:1;min-width:0}
+#ok{position:absolute;right:16px;bottom:8px;width:56px;height:56px;border:0;background:none;padding:6px;cursor:pointer}#m .sheet{padding-bottom:66px}#cols{margin-top:8px;font-size:20px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}#cols input{width:44px;height:30px;border:0;border-radius:8px;background:none;padding:0;vertical-align:middle;overflow:hidden}#cols input[type=color]::-webkit-color-swatch-wrapper{padding:0}#cols input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}#cols input[type=range]{width:140px;height:18px;margin:0;overflow:visible}#cols #accgo{font-size:19px;padding:5px 18px;margin-left:auto;white-space:nowrap}.dc{flex:none;width:42px;height:42px;border:2.5px solid var(--ink);border-radius:12px;background:var(--card);padding:6px;cursor:pointer}.ico{display:inline-block;width:22px;height:22px;vertical-align:middle}.row input[type=text]{flex:1;min-width:0}
 .lr{display:flex;gap:12px;align-items:center;border-top:2.5px solid var(--ink);padding:8px 0}.lr:first-child{border-top:0}.lr img{width:78px;height:56px;object-fit:contain;background:#fff;border:2.5px solid var(--ink);border-radius:6px;flex:none}.lr>div{flex:1;min-width:0}.lr b{font-size:26px}.lr small{display:block;color:var(--mute);font-size:18px;line-height:1.15}.lr .btn{flex:none}
 .ftw{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;min-width:100%;width:max-content;padding:4px 6px}.ftw svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;color:var(--ink)}
 .fg{display:grid;grid-template-columns:repeat(4,72px);gap:0 6px;position:relative}.fr{display:flex;gap:10px;justify-content:center;position:relative}
@@ -111,8 +111,9 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 .sheet .btn,.sheet .dc{margin:3px}
 /* 흰 종이 버튼이 잘 보이도록 창 바탕은 연한 미색 + 구겨진 종이 텍스쳐 */
 .sheet,#panel{background:linear-gradient(rgba(238,236,229,.88),rgba(238,236,229,.88)),#eeece5 url(assets/kiboecontor-paper-626781_1920.jpg) center/cover}
-.ti #rf{border:0;background:#fff;filter:url(#cutS);box-shadow:none}
-.sheet input[type=text]{background:#fff}
+.ti #rf{border:0;background:transparent;filter:none;box-shadow:none}
+.sheet input[type=text]{background:transparent}
+.sheet #dn{background:transparent;filter:none}
 /* 버튼 속 모양도 반듯한 알약 대신 손으로 오린 듯 삐뚤게 */
 .btn{border-radius:24px 14px 26px 12px/14px 26px 12px 24px}
 .btn:nth-child(2n){border-radius:14px 26px 12px 24px/24px 12px 26px 14px}
@@ -126,8 +127,9 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 /* 창 바탕: 진한 베이지 대신 구겨진 종이 텍스쳐만 은은하게 */
 .sheet,#panel{background:linear-gradient(rgba(250,250,247,.45),rgba(250,250,247,.45)),#f4f4f1 url(assets/kiboecontor-paper-626781_1920.jpg) center/cover}
 /* 성격 칩 (그리기 창) */
-#trs{display:flex;flex-direction:column;gap:6px}#trs>span{font-size:18px}#trs small{color:var(--mute);font-size:15px}
+#trs{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}#trs>span{font-size:18px}#trs small{color:var(--mute);font-size:15px}
 #trc{display:flex;flex-wrap:wrap;gap:6px}#trc .btn{flex:1 1 28%;font-size:17px;padding:2px 6px;white-space:nowrap}
+#tools{margin-top:10px}
 /* 정보 창: 성격 배지 · 기분 · 욕구 */
 .trb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;cursor:pointer}.trbadge{background:#fff;filter:url(#cutS);padding:1px 10px;font-size:17px;font-weight:700}
 .tred{font-size:15px;color:var(--mute);text-decoration:underline dotted}.trb.ed{cursor:default}.trb .btn{font-size:16px;padding:1px 10px}
