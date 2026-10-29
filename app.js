@@ -78,13 +78,15 @@ matchMedia('(prefers-color-scheme:dark)').addEventListener('change',theme);theme
 function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),ms||3000)}
 
 /* ---------- 저장 ---------- */
-function save(){try{localStorage.setItem(KEY,JSON.stringify({eggs,start,tanks,fish:fish.map(f=>({id:f.id,name:f.name,sex:f.sex,img:f.img,born:f.born,lb:f.lb,x:f.x,y:f.y,t:f.t,k:f.k,g:f.g,p:f.p,pt:f.pt,inh:f.inh,v:f.v,hu:f.hu,ml:f.ml,tk:f.tk,tr:f.tr,bo:f.bo,lo:f.lo,af:f.af,walk:f.walk,acc:f.acc}))}))}catch(e){toast('저장 공간이 부족해요. 물고기를 삭제해 주세요.')}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({eggs,start,tanks,fish:fish.map(f=>({id:f.id,name:f.name,sex:f.sex,img:f.img,born:f.born,lb:f.lb,x:f.x,y:f.y,t:f.t,k:f.k,g:f.g,p:f.p,pt:f.pt,inh:f.inh,v:f.v,hu:f.hu,ml:f.ml,tk:f.tk,tr:f.tr,bo:f.bo,lo:f.lo,af:f.af,rs:f.rs,walk:f.walk,acc:f.acc}))}))}catch(e){toast('저장 공간이 부족해요. 물고기를 삭제해 주세요.')}}
 const mtMig=p=>p&&p.mv!==2?{...p,mt:[0,1,2,3,4,1,5,6][cl(Math.round(p.mt??1),0,7)],mv:2}:p;
 function mk(o){if(o.v===2&&o.p)o={...o,p:{...o.p,et:(o.p.et??1)+1,mt:(o.p.mt??0)+1,ft:(o.p.ft??0)+1},v:3,mig:true};if(o.p)o={...o,p:mtMig(o.p)};const f={id:o.id||('f'+Date.now()+Math.random().toString(36).slice(2,6)),name:o.name,sex:o.sex,img:o.img,born:o.born||Date.now(),lb:o.lb||0,t:o.t||null,k:o.k||'d',g:o.g||{c:'#2b2a63',w:6},p:o.p||null,pt:o.pt||null,inh:'',v:o.v||0,fr:null,mig:!!o.mig,hu:typeof o.hu==='number'?o.hu:rnd(0,.25),ml:o.ml|0,tk:o.tk||tanks[0].id,tr:Array.isArray(o.tr)&&o.tr.length?o.tr.filter(k=>TR[k]).slice(0,2):rndTr(),bo:typeof o.bo==='number'?o.bo:rnd(0,.3),lo:typeof o.lo==='number'?o.lo:0,af:o.af&&typeof o.af==='object'?{...o.af}:{},rs:{},walk:o.walk&&o.walk.u?{u:o.walk.u}:null,acc:Array.isArray(o.acc)?o.acc.filter(a=>a&&typeof a.img==='string'&&a.img.startsWith('data:image/')).slice(0,3):[],tc:-99,nc:0,ate:0,chase:false,
  x:o.x??rnd(300,980),y:o.y??rnd(260,450),vx:rnd(-20,20),vy:0,sp:rnd(25,60),tx:0,ty:0,next:0,flip:1,dir:1,ph:rnd(0,6.28),sd:rnd(0,200),w:1,h:1,dw:60,dh:40,ok:false};
+ if(o.rs&&typeof o.rs==='object')Object.assign(f.rs,o.rs);
  f.im=new Image();f.im.onload=()=>{f.w=f.im.naturalWidth||1;f.h=f.im.naturalHeight||1;f.ok=true;if(f.v===3)bake(f);else bakeD(f)};f.im.src=f.img;return f}
 try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&Array.isArray(d.fish)){
  fish=d.fish.slice(0,MAX).filter(f=>f&&typeof f.img==='string'&&f.img.startsWith('data:image/')).map(mk);
+ for(const a of fish)if(!Object.keys(a.rs).length)for(const b of fish)if(a!==b&&afv(a,b)!==0)a.rs[b.id]=stg(a,b);
  if(Array.isArray(d.eggs))eggs=d.eggs.filter(e=>e&&e.t&&e.t.fa&&e.t.mo&&e.ga&&e.gb&&typeof e.x==='number'&&typeof e.y==='number').slice(0,MAX).map(e=>({...e,ga:{...e.ga,p:mtMig(e.ga.p)},gb:{...e.gb,p:mtMig(e.gb.p)}}));
  if(d.start)start=d.start;
  if(Array.isArray(d.tanks)){const ts=d.tanks.filter(t=>t&&typeof t.id==='string'&&Number.isInteger(t.gx)&&Number.isInteger(t.gy));if(ts.length)tanks=ts}
