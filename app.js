@@ -38,9 +38,10 @@ try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&Array.isArray(d.
 /* ---------- 카메라 / 리사이즈 ---------- */
 let camT=null;
 function clampCam(){const k=s0*cam.z,[a,b,c,d]=tkBox(),mx=(a+c)/2,my=(b+d)/2-10,hx=Math.max(0,(c-a+300-CW/k)/2),hy=Math.max(0,(d-b+300-CH/k)/2);cam.x=cl(cam.x,mx-hx,mx+hx);cam.y=cl(cam.y,my-hy,my+hy)}
+const isOv=()=>tanks.length>1&&cam.z<=zFit()+.03,focusTank=tk=>{const [ox,oy]=off(tk);follow=null;camT={x:ox+641,y:oy+350,z:1}};
 function fitAll(){const [a,b,c,d]=tkBox();camT={x:(a+c)/2,y:(b+d)/2-10,z:zFit()}}
 function camStep(dt){if(follow){const f=fish.find(o=>o.id===follow);if(!f||sel!==follow||f.drag)follow=null;else{const [ox,oy]=off(f.tk);camT={x:f.x+ox,y:f.y+oy,z:followZ}}}if(!camT)return;const a=Math.min(1,dt*6);cam.x+=(camT.x-cam.x)*a;cam.y+=(camT.y-cam.y)*a;cam.z+=(camT.z-cam.z)*a;clampCam();if(Math.abs(camT.x-cam.x)+Math.abs(camT.y-cam.y)+Math.abs(camT.z-cam.z)<.5)camT=null}
-function focusFish(o){sel=o.id;selE=null;delArm=false;follow=o.id;followZ=Math.max(cam.z,2.2);panel()}
+function focusFish(o){sel=o.id;selE=null;delArm=false;if(isOv()||o.tk!==actTk())focusTank(o.tk);panel()}
 function resize(){const r=cv.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);CW=r.width;CH=r.height;cv.width=CW*d;cv.height=CH*d;s0=Math.min(CW/982,CH/640)*.86;clampCam()}
 addEventListener('resize',resize);
 const w2=e=>{const r=cv.getBoundingClientRect(),k=s0*cam.z;return{x:(e.clientX-r.left-CW/2)/k+cam.x,y:(e.clientY-r.top-CH/2)/k+cam.y}};
@@ -215,13 +216,14 @@ const hitC=document.createElement('canvas').getContext('2d');let ppPath=null;
 function onPaper(x,y){if(!ppPath){ppPath=new Path2D();PP.forEach((p,i)=>i?ppPath.lineTo(p[0],p[1]):ppPath.moveTo(p[0],p[1]));ppPath.closePath();hitC.lineWidth=60;hitC.lineJoin='round'}return hitC.isPointInPath(ppPath,x,y)||hitC.isPointInStroke(ppPath,x,y)}
 function click(W){const L=loc(W);
  if(pickO){if(L&&onPaper(L.x,L.y)){if(full(L.tk)){toast('이 어항은 자리가 없어요. 다른 어항을 골라 주세요');return}const o=pickO;endPick();o.tk=L.tk;addFish(o)}return}
- if(!L||!onPaper(L.x,L.y)){sel=selE=null;delArm=false;panel();nextBg();return}const w=L,tk=L.tk;
+ if(!L||!onPaper(L.x,L.y)){sel=selE=null;delArm=false;panel();if(tanks.length>1&&!isOv()){fitAll();return}nextBg();return}const w=L,tk=L.tk;
+ if((isOv()||tanks.length>1&&tk!==actTk())&&!feed&&!fish.some(f=>f.tk===tk&&Math.abs(w.x-f.x)<f.dw/2+8&&Math.abs(w.y-f.y)<f.dh/2+8)&&!eggs.some(e=>e.tk===tk&&Math.abs(w.x-e.x)<28&&Math.abs(w.y-e.y)<32)){focusTank(tk);return}
  if(feed){const q=fitPt(w.x,w.y,0,0);if(w.y>205&&Math.hypot((w.x-641)/441,(w.y-380)/255)<1&&foods.length<60)for(let i=0;i<4;i++)foods.push({tk,x:w.x+rnd(-40,40),y:w.y+rnd(-14,14),v:rnd(20,36),t:0});return}
  if(w.y>205&&Math.hypot((w.x-641)/441,(w.y-380)/255)<1){const k=0|rnd(3,6);for(let i=0;i<k;i++)bsp(w.x+rnd(-12,12),w.y+rnd(-8,8),rnd(3,8),tk);sndPlay()}
  sel=selE=null;delArm=false;
  for(const e of eggs)if(e.tk===tk&&Math.abs(w.x-e.x)<28&&Math.abs(w.y-e.y)<32){selE=e.id;break}
  if(!selE)for(let i=fish.length-1;i>=0;i--){const f=fish[i];if(f.tk===tk&&Math.abs(w.x-f.x)<f.dw/2+8&&Math.abs(w.y-f.y)<f.dh/2+8){sel=f.id;break}}
- if(sel){follow=sel;followZ=Math.max(cam.z,2.2)}
+ if(sel){const sf=fish.find(o=>o.id===sel);if(sf&&(isOv()||sf.tk!==actTk()))focusTank(sf.tk)}
  panel()}
 function tn(n,d){const lv=fish.find(o=>o.id===n.id),g=!lv,src=lv?lv.img:n.im,hp=n.fa&&n.mo&&d<3;
  return `<div class="tn${hp?' hp':''}">${hp?`<div class="tp">${tn(n.fa,d+1)}${tn(n.mo,d+1)}</div>`:''}<div class="nb${g&&d?' gone':''}">${src&&src.startsWith('data:image/')?`<img src="${src}" alt="">`:''}<small>${esc(n.name)}</small></div></div>`}
@@ -286,7 +288,7 @@ function famDraw(fam){const w=$('#ftw'),sv=$('#fsv');if(!w||!sv)return;const o=w
  sv.setAttribute('viewBox',`0 0 ${o.width} ${o.height}`);sv.innerHTML=`<path d="${d}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`}
 /* 태어난 지 얼마나 됐는지: 초 → 분 → 시간 → 일 */
 function ageS(a){a=Math.floor(a);const d=Math.floor(a/86400),h=Math.floor(a/3600)%24,m=Math.floor(a/60)%60,s=a%60;return '태어난 지 '+(d?`${d}일 ${h}시간`:h?`${h}시간 ${m}분`:m?`${m}분 ${s}초`:`${s}초`)}
-function ageTxt(){const f=fish.find(o=>o.id===sel),e=$('#age');if(!f||!e)return;const a=age(f);e.textContent=ageS(a);const gq=$('#grv'),pc=Math.min(f.ml|0,GROW)/GROW;if(gq)gq.innerHTML=`몸집 <span class="gb"><i style="width:${Math.max(4,pc*100)}%"></i></span> <small>${Math.ceil(slot(f)-1e-6)}칸 차지</small>`;$('#st').textContent='지금: '+state(f)}
+function ageTxt(){const f=fish.find(o=>o.id===sel),e=$('#age');if(!f||!e)return;const a=age(f);e.textContent=ageS(a);const gq=$('#grv'),pc=Math.min(f.ml|0,GROW)/GROW;if(gq){const h=`몸집 <span class="gbw" data-tip="${Math.ceil(slot(f)-1e-6)} / ${MAX}칸 차지"><span class="gb"><i style="width:${Math.max(4,pc*100)}%"></i></span></span>`;if(gq.innerHTML!==h)gq.innerHTML=h}$('#st').textContent='지금: '+state(f)}
 function ui(){const nw=new Date(),z=n=>String(n).padStart(2,'0');$('#day').innerHTML=`<span class="yr">${nw.getFullYear()}</span>${nw.getMonth()+1}월 ${nw.getDate()}일 <span class="sc">${nw.getHours()%12||12}:${z(nw.getMinutes())}:${z(nw.getSeconds())}<i>${nw.getHours()<12?'AM':'PM'}</i></span><small>${fish.length}마리${eggs.length?` · 알 ${eggs.length}`:''}</small>`}
 
 /* ---------- 번식 / 유전 ---------- */
@@ -597,6 +599,7 @@ Object.assign(DUA,{fishList:()=>fish.filter(f=>f.ok).map(f=>({name:f.name,img:f.
  zoomIn(){const [ox,oy]=off(actTk());camT={x:641+ox,y:380+oy,z:4}},zoomOut(){const [ox,oy]=off(actTk());camT={x:641+ox,y:350+oy,z:1}}});
 
 new ResizeObserver(resize).observe(cv);resize();ui();
+if(tanks.length>1){fitAll();Object.assign(cam,camT);camT=null;clampCam()}
 setInterval(()=>{breedCheck();ageTxt();ui()},1000);setInterval(save,6000);
 addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
 last=performance.now();sched();
