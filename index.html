@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Doodle your Aquarium!</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261029w">
+<link rel="stylesheet" href="styles.css?v=20261030f">
 </head><body>
 <canvas id="c" aria-label="어항"></canvas>
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" aria-hidden="true"><filter id="cut" x="-30%" y="-45%" width="160%" height="190%" color-interpolation-filters="sRGB">
@@ -21,14 +21,15 @@
 <feMerge><feMergeNode in="sh"/><feMergeNode in="pp"/><feMergeNode in="SourceGraphic"/></feMerge></filter></svg>
 <div id="ttl" class="paper">Doodle <small>your</small><br>Aquarium!</div>
 <div id="day" class="paper"></div>
-<nav id="nav"><button class="cb" id="bd" data-tip="물고기 추가하기" data-ic="fish" aria-label="물고기 그리기"></button><button class="cb" id="bf" data-tip="먹이 주기" data-ic="food" aria-label="먹이 주기"></button><button class="cb" id="bl" data-tip="물고기 정보" data-ic="fishl" aria-label="물고기 목록"></button><button class="cb" id="bs" data-tip="설정" data-ic="gear" aria-label="설정"></button></nav>
+<nav id="nav"><button class="cb" id="bd" data-tip="물고기 추가하기" data-ic="fish" aria-label="물고기 그리기"></button><button class="cb" id="bf" data-tip="먹이 주기" data-ic="food" aria-label="먹이 주기"></button><button class="cb" id="bl" data-tip="물고기 정보" data-ic="fishl" aria-label="물고기 목록"></button><button class="cb" id="bw" data-tip="소품함" data-ic="hanger" aria-label="소품함"></button><button class="cb" id="bs" data-tip="설정" data-ic="gear" aria-label="설정"></button></nav>
+<button class="cb" id="bpk" data-tip="물방울 공원 (산책)" data-ic="park" aria-label="물방울 공원"></button>
 <button class="cb" id="bgm" data-tip="미니게임" data-ic="game" aria-label="미니게임"></button>
 <button class="cb" id="bm" data-tip="창 모드" data-ic="mini" aria-label="창 모드"></button>
 <button id="minimsg" class="btn" hidden>미니 모드로 보는 중 · 여기를 누르면 돌아와요</button>
 <div id="tui"><button id="tan" class="tadd" data-ic="plus" aria-label="위에 어항 추가" title="위에 어항 추가" hidden></button><button id="tas" class="tadd" data-ic="plus" aria-label="아래에 어항 추가" title="아래에 어항 추가" hidden></button><button id="taw" class="tadd" data-ic="plus" aria-label="왼쪽에 어항 추가" title="왼쪽에 어항 추가" hidden></button><button id="tae" class="tadd" data-ic="plus" aria-label="오른쪽에 어항 추가" title="오른쪽에 어항 추가" hidden></button><button id="tdel" class="tdel" data-ic="trash" aria-label="이 어항 삭제" title="이 어항 삭제" hidden></button></div>
 <div id="panel" hidden></div><div id="toast" role="status"></div>
 <div id="tempty"></div>
-<div id="ttip" hidden></div>
+<div id="twalk"></div><div id="ttip" hidden></div><div id="ctip" hidden></div>
 <div id="tpick" hidden><b>물고기가 살 어항을 선택해 주세요</b><button class="btn" id="tpx">취소</button></div>
 
 <div id="game" hidden><canvas id="gc"></canvas>
@@ -39,14 +40,25 @@
 <div id="gover" class="gbox" hidden></div>
 <div id="gpick" class="gbox" hidden></div></div>
 
+<div id="park" hidden><canvas id="pkc"></canvas>
+<div id="pkload" class="gbox">물방울 공원으로 가는 중...</div>
+<button id="pkexit" class="gbox gbtn">← 어항으로</button>
+<div id="pknews" class="gbox"></div>
+<div id="pkcard" class="gbox" hidden></div>
+<div id="pkhelp" class="gbox" hidden>빈 곳 클릭: 간식 · 물고기 위에서 문지르기: 쓰다듬기 · 물고기를 꾹 눌러 다른 물고기 옆에 놓기: 소개팅</div></div>
+
 <div class="modal" id="m" hidden><div class="sheet" role="dialog" aria-modal="true">
 <button class="x" id="mx" data-ic="x" aria-label="닫기"></button>
 <div class="hd"><h2 id="mt">물고기 그리기</h2><span class="tabs" id="tabs"><button class="btn on" data-tab="d">그리기</button><button class="btn" data-tab="c">커스터마이징</button></span></div>
-<div class="body"><div class="L"><div class="ti"><button class="btn" hidden id="rf" aria-label="랜덤 물고기"><span class="ico" data-ic="dice"></span> 랜덤 물고기</button><button id="clr" data-ic="trash" aria-label="전체 지우기"></button><button id="undo" data-ic="undo" aria-label="실행 취소"></button></div>
-<div class="pad" id="padw"><canvas id="pad" width="420" height="280"></canvas><canvas id="pv" width="420" height="280" hidden></canvas><canvas id="pw" width="420" height="280"></canvas>
+<div class="body"><div class="L"><div class="ti"><button class="btn" id="accgo" aria-label="소품 입히기">👒 소품 입히기</button><button class="btn" hidden id="rf" aria-label="랜덤 물고기"><span class="ico" data-ic="dice"></span> 랜덤 물고기</button><button id="clr" data-ic="trash" aria-label="전체 지우기"></button><button id="undo" data-ic="undo" aria-label="실행 취소"></button></div>
+<div class="pad" id="padw"><canvas id="pad" width="420" height="280"></canvas><canvas id="pv" width="420" height="280" hidden></canvas><canvas id="pw" width="420" height="280"></canvas><canvas id="apv" width="420" height="280" hidden></canvas><canvas id="apad" width="420" height="280" hidden></canvas>
 <svg class="gd" id="gd" viewBox="0 0 420 280"><ellipse cx="170" cy="150" rx="120" ry="72" stroke-dasharray="9 9"/><path d="M285 150l70-48v96z" stroke-dasharray="9 9"/></svg><span class="g l">← 머리</span><span class="g r">꼬리 →</span></div><div id="cols" hidden>선 색 <input type="color" id="lc" value="#2b2a63" aria-label="선 색"></div></div>
 <div class="R"><div class="row" style="align-items:center"><input type="text" id="nm" maxlength="10" placeholder="물고기 이름" aria-label="물고기 이름"><button class="dc" id="dn" data-ic="dice" aria-label="랜덤 이름"></button></div>
 <div class="row" id="sex"><button class="btn on" data-s="M" aria-label="수컷">♂</button><button class="btn" data-s="F" aria-label="암컷">♀</button></div>
+<div id="trs"><span>성격 <small>(최대 2개)</small></span><div id="trc"></div></div>
+<div id="accp" hidden><div class="acch">소품 입히기 <small>눌러서 입히기 · 최대 3개</small> <button class="btn" id="accdone">완료</button></div><div id="accl"></div><div id="accc" hidden><label>크기 <input type="range" id="accs" min=".08" max="1.2" step=".01"></label><label>회전 <input type="range" id="accr" min="-3.14" max="3.14" step=".01"></label><button class="btn" id="accx">빼기</button></div><p class="acchint">미리보기에서 소품을 끌어서 옮겨요</p></div>
+<div id="accd" class="row" hidden><button class="btn" id="accsave">소품함에 넣기</button><button class="btn" id="acccan">취소</button></div>
+<div id="wlist" hidden><div class="acch">내 소품함 <small>× 눌러서 버리기</small></div><div id="wl"></div></div>
 <div id="cust" hidden><p id="cpt"></p><label data-c="bc"><span>몸 색</span><input type="color" id="bc" value="#9ad6f0" aria-label="몸 색"></label><label data-c="pc"><span>무늬 색</span><input type="color" id="pc" value="#5b8fb9" aria-label="무늬 색"></label><label data-c="fc"><span>지느러미 색</span><input type="color" id="fc" value="#8bcbe8" aria-label="지느러미 색"></label></div>
 <div class="row" id="tools"><button class="btn" data-t="s" id="tsel" style="display:none">부위 선택</button><button class="btn on" data-t="p">펜</button><button class="btn" data-t="f" id="tf">채우기</button><button class="btn" data-t="e">지우개</button></div>
 <div class="row" id="sizes"></div>
@@ -54,11 +66,16 @@
 <button id="ok" data-ic="fishk" aria-label="어항에 넣기"></button></div></div></div></div>
 
 <div class="modal" id="lm" hidden><div class="sheet" style="max-width:520px"><button class="x" id="lx" data-ic="x" aria-label="닫기"></button><h2>물고기 목록</h2><div id="lst"></div></div></div>
+<div class="modal" id="wm" hidden><div class="sheet" style="max-width:560px"><button class="x" id="wmx" data-ic="x" aria-label="닫기"></button><h2>소품함</h2><p class="acchint">그린 소품은 물고기를 만들거나 꾸밀 때 입힐 수 있어요</p><div id="wslots"></div></div></div>
 <div class="modal" id="sm" hidden><div class="sheet" style="max-width:380px"><button class="x" id="sx" data-ic="x" aria-label="닫기"></button><h2>설정</h2>
 <p>소리 크기 <input type="range" id="vol" min="0" max="100" value="50" style="width:50%;accent-color:#2b2a63"></p>
 <p><label class="tg"><input type="checkbox" id="egg" checked> 알 낳기</label></p>
+<p><label class="tg"><input type="checkbox" id="optSay" checked> 물고기 말풍선</label></p>
+<p><label class="tg"><input type="checkbox" id="optMood" checked> 기분 표시 (♪ 비구름 등)</label></p>
+<p><label class="tg"><input type="checkbox" id="optFx" checked> 효과 (하트 · 물 튀김 · 거품)</label></p>
 <p><button class="btn" id="rs">어항 리셋</button></p></div></div>
 
-<script src="app.js?v=20261029w"></script>
-<script src="game.js?v=20261029w"></script>
+<script src="app.js?v=20261030f"></script>
+<script src="game.js?v=20261030f"></script>
+<script src="park.js?v=20261030f"></script>
 </body></html>

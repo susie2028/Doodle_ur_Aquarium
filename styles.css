@@ -125,3 +125,41 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 #grs{box-shadow:none}
 /* 창 바탕: 진한 베이지 대신 구겨진 종이 텍스쳐만 은은하게 */
 .sheet,#panel{background:linear-gradient(rgba(250,250,247,.45),rgba(250,250,247,.45)),#f4f4f1 url(assets/kiboecontor-paper-626781_1920.jpg) center/cover}
+/* 성격 칩 (그리기 창) */
+#trs{display:flex;flex-direction:column;gap:6px}#trs>span{font-size:18px}#trs small{color:var(--mute);font-size:15px}
+#trc{display:flex;flex-wrap:wrap;gap:6px}#trc .btn{flex:1 1 28%;font-size:17px;padding:2px 6px;white-space:nowrap}
+/* 정보 창: 성격 배지 · 기분 · 욕구 */
+.trb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;cursor:pointer}.trbadge{background:#fff;filter:url(#cutS);padding:1px 10px;font-size:17px;font-weight:700}
+.tred{font-size:15px;color:var(--mute);text-decoration:underline dotted}.trb.ed{cursor:default}.trb .btn{font-size:16px;padding:1px 10px}
+#mood{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}.nds{display:flex;gap:10px;width:100%}.nd{position:relative;display:flex;flex-direction:column;flex:1;font-size:15px;color:var(--mute)}.nd .gb{max-width:none;height:9px}
+.nd:hover::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);white-space:nowrap;background:#fff;color:#2b2a63;padding:2px 10px;filter:url(#cutS);font:700 15px Gaegu,sans-serif;z-index:5}
+/* 성격 설명 툴팁 */
+#ctip{position:fixed;z-index:30;max-width:260px;background:#fff;color:#2b2a63;padding:8px 14px;filter:url(#cutS);font:700 18px/1.3 Gaegu,sans-serif;pointer-events:none}#ctip small{display:block;font-weight:400;font-size:16px;color:#55556f;margin-top:2px}
+.trb{cursor:default}.trb b{font-weight:700}
+/* 욕구 막대: 테두리를 얇게 해서 채운 만큼 보이게 */
+.nd .gb{display:block;height:10px;border:1.5px solid #2b2a63;background:#fff;margin-top:2px}.nd .gb i{display:block;height:100%;border-radius:999px}
+.rel{list-style:none;margin:0 0 6px;padding:0}.rel li{display:flex;justify-content:space-between;gap:10px;font-size:18px;line-height:1.6}.rel li span{color:var(--mute);font-size:16px}.rel .none{color:var(--mute);font-size:16px}
+/* 어항 위 '산책 중' 쪽지 */
+#twalk .twn{position:fixed;z-index:2;border:0;background:#fff;color:#2b2a63;filter:url(#cutS);padding:6px 14px;font:700 18px/1.25 Gaegu,sans-serif;cursor:pointer;transform-origin:center;white-space:nowrap}#twalk .twn small{display:block;font-weight:400;font-size:14px;color:#77778f}
+#bpk{position:fixed;right:172px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}#bpk::after{left:auto;right:0;transform:translateY(4px)}#bpk:hover::after,#bpk:focus-visible::after{transform:none}
+/* ---------- 물방울 공원 ---------- */
+#park{position:fixed;inset:0;z-index:15;background:#fbfbf8 url(assets/kiboecontor-paper-626781_1920.jpg) center/cover;opacity:0;transition:opacity .8s;color:#2b2a63}#park.on{opacity:1}
+#pkc{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:pointer;opacity:0;transition:opacity .4s}#park.run #pkc{opacity:1}
+#pkload{left:50%;top:50%;transform:translate(-50%,-50%);font-size:30px;padding:14px 30px}
+#pkexit{left:20px;top:calc(18px + env(safe-area-inset-top,0px))}
+#pknews{right:20px;top:calc(18px + env(safe-area-inset-top,0px));width:min(300px,40vw);font-weight:400;font-size:17px}#pknews h4{margin:0 0 4px;font-size:21px}#pknews p{margin:3px 0;line-height:1.3}#pknews:empty{display:none}
+#pkcard{left:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));width:min(320px,80vw);font-weight:400;font-size:18px}#pkcard h4{margin:0 0 4px;font-size:24px}#pkcard h4 small{font-size:16px;color:#77778f;font-weight:400}#pkcard p{margin:4px 0}.pkrel{color:#55556f;font-size:16px;line-height:1.5}
+.pkx{position:absolute;right:10px;top:6px;border:0;background:none;font-size:26px;cursor:pointer;color:#2b2a63}
+#pkhelp{left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font-weight:400;font-size:17px;white-space:nowrap}
+/* 꾸미기 탭 */
+#apv,#apad{position:absolute;inset:0;width:100%;height:100%}#apad{cursor:crosshair}
+#accp{display:flex;flex-direction:column;gap:8px}.acch{font-size:20px;font-weight:700}.acch small{font-weight:400;color:var(--mute);font-size:15px}
+#accl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:230px;overflow:auto;padding:4px}
+.acci{aspect-ratio:1;border:0;background:#fff;filter:url(#cutS);border-radius:16px 10px 18px 12px;padding:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .12s}.acci:hover{transform:scale(1.07)}.acci img{max-width:100%;max-height:100%;object-fit:contain}
+.accn b{font-size:30px;line-height:1}.accn span{font-size:13px;font-weight:700;color:#2b2a63}
+#accc{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:17px}#accc label{display:flex;align-items:center;gap:6px}#accc input{width:110px}.acchint{margin:0;font-size:15px;color:var(--mute)}
+/* 소품함(옷장) */
+#wlist{display:flex;flex-direction:column;gap:8px}#wl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:220px;overflow:auto;padding:4px}
+#wl .acci{position:relative;cursor:default}.wx{position:absolute;top:2px;right:4px;border:0;background:none;font-size:20px;line-height:1;color:#2b2a63;cursor:pointer}
+#accgo{width:auto;margin-right:auto;font-size:17px;padding:0 14px;white-space:nowrap}#accdone{font-size:16px;padding:1px 14px;margin-left:8px;vertical-align:middle}
+#wslots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;max-height:60vh;overflow:auto;padding:4px}#wslots .acci{position:relative}#wslots .acd{opacity:.75}
