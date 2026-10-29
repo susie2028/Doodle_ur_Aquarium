@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Doodle your Aquarium!</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261029f">
+<link rel="stylesheet" href="styles.css?v=20261029p">
 </head><body>
 <canvas id="c" aria-label="어항"></canvas>
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" aria-hidden="true"><filter id="cut" x="-30%" y="-45%" width="160%" height="190%" color-interpolation-filters="sRGB">
@@ -25,8 +25,11 @@
 <button class="cb" id="bgm" data-tip="미니게임" data-ic="game" aria-label="미니게임"></button>
 <button class="cb" id="bm" data-tip="창 모드" data-ic="mini" aria-label="창 모드"></button>
 <button id="minimsg" class="btn" hidden>미니 모드로 보는 중 · 여기를 누르면 돌아와요</button>
+<div id="tui"><button id="tan" class="tadd" data-ic="plus" aria-label="위에 어항 추가" title="위에 어항 추가" hidden></button><button id="tas" class="tadd" data-ic="plus" aria-label="아래에 어항 추가" title="아래에 어항 추가" hidden></button><button id="taw" class="tadd" data-ic="plus" aria-label="왼쪽에 어항 추가" title="왼쪽에 어항 추가" hidden></button><button id="tae" class="tadd" data-ic="plus" aria-label="오른쪽에 어항 추가" title="오른쪽에 어항 추가" hidden></button><button id="tdel" class="tdel" data-ic="trash" aria-label="이 어항 삭제" title="이 어항 삭제" hidden></button></div>
 <div id="panel" hidden></div><div id="toast" role="status"></div>
-<div id="empty" hidden><p>물고기가 없어요.<br>버튼을 눌러 새로 추가해 주세요.</p><button class="btn" id="eadd">물고기 추가하기</button></div>
+<div id="tempty"></div>
+<div id="ttip" hidden></div>
+<div id="tpick" hidden><b>물고기가 살 어항을 선택해 주세요</b><button class="btn" id="tpx">취소</button></div>
 
 <div id="game" hidden><canvas id="gc"></canvas>
 <div id="gload" class="gbox">어항 속으로 풍덩!</div>
@@ -56,6 +59,6 @@
 <p><label class="tg"><input type="checkbox" id="egg" checked> 알 낳기</label></p>
 <p><button class="btn" id="rs">어항 리셋</button></p></div></div>
 
-<script src="app.js?v=20261029f"></script>
-<script src="game.js?v=20261029f"></script>
+<script src="app.js?v=20261029p"></script>
+<script src="game.js?v=20261029p"></script>
 </body></html>
