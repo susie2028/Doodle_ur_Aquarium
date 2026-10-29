@@ -146,7 +146,7 @@ function update(dt,now){
   for(const o of fish){if(o===f||!o.ok||o.walk||o.tk!==f.tk)continue;const ex=f.x-o.x,ey=f.y-o.y,r=(f.dw+o.dw)*(afv(f,o)<=-50?.8:.42),e=Math.hypot(ex,ey)||.1;if(e<r){const k=(r-e)/r*dt*320;f.vx+=ex/e*k;f.vy+=ey/e*k*.8}}[f.x,f.y]=fitPt(f.x+f.vx*dt,f.y+f.vy*dt,f.dw/2,f.chase?Math.min(f.dh/2,12):f.dh/2);
   if(Math.abs(f.vx)>4)f.dir=f.vx>0?1:-1;f.flip+=(f.dir-f.flip)*Math.min(1,dt*9)}
  foods=foods.filter(o=>{o.t+=dt;if(o.y<520)o.y+=o.v*dt;
-  for(const f of fish){if(f.ok&&!f.drag&&!f.walk&&f.tk===o.tk&&Math.hypot(o.x-(f.x+f.dir*f.dw*.45),o.y-f.y)<Math.max(o.y>=520?26:18,f.dh*.5)){fx.push({x:o.x,y:o.y,t:0,k:'eat',f});f.ch=now;f.hu=Math.max(0,f.hu-.55);f.bo=Math.max(0,f.bo-.05);for(const g of fish)if(g!==f&&g.tk===f.tk){if(g.tf===o)g.af[f.id]=afv(g,f)-4;else if(Math.hypot(g.x-f.x,g.y-f.y)<150)g.af[f.id]=afv(g,f)+2};talk(f,f.hu<.1?'full':'eat');f.ate=Date.now();if((f.ml|0)<GROW&&usedIn(f.tk)+(MAX-1)/GROW<=MAX+1e-6)f.ml=(f.ml|0)+1;return false}}return o.t<25});
+  for(const f of fish){if(f.ok&&!f.drag&&!f.walk&&f.tk===o.tk&&Math.hypot(o.x-(f.x+f.dir*f.dw*.45),o.y-f.y)<Math.max(o.y>=520?26:18,f.dh*.5)){fx.push({x:o.x,y:o.y,t:0,k:'eat',f,g:o.k==='g'});f.ch=now;f.hu=Math.max(0,f.hu-(o.k==='g'?.25:.55));f.bo=Math.max(0,f.bo-.05);for(const g of fish)if(g!==f&&g.tk===f.tk){if(g.tf===o)g.af[f.id]=afv(g,f)-4;else if(Math.hypot(g.x-f.x,g.y-f.y)<150)g.af[f.id]=afv(g,f)+2};talk(f,f.hu<.1?'full':'eat');f.ate=Date.now();if(o.k==='g'&&(f.ml|0)<GROW&&usedIn(f.tk)+(MAX-1)/GROW<=MAX+1e-6)f.ml=(f.ml|0)+1;return false}}return o.t<25});
  relUpdate(dt);bubUpdate(dt);for(const e of eggs)e.y=Math.min(EGGY,e.y+dt*110);
  for(const e of fx)e.t+=dt;fx=fx.filter(e=>e.t<2.2)}
 
@@ -185,7 +185,7 @@ function draw(t){
  const dk=drag&&drag.f.tk,ord=[...tanks].sort((a,b)=>((a.id===dk)*2+(a.id===hovTk))-((b.id===dk)*2+(b.id===hovTk)));
  for(const T of ord){const tk=T.id,ts=tkS[tk]=(tkS[tk]||1)+((tk===hovTk?1.03:1)-(tkS[tk]||1))*.2;cx.save();cx.translate(T.gx*SX+641,T.gy*SY+380);cx.scale(ts,ts);cx.translate(-641,-380);
  paperDraw();scene(fr,t);bubDraw(fr,tk);
- cx.fillStyle='#f08a4b';for(const o of foods){if(o.tk!==tk)continue;cx.beginPath();cx.arc(o.x,o.y,5,0,6.3);cx.fill()}
+ for(const o of foods){if(o.tk!==tk)continue;cx.fillStyle=o.k==='g'?'#8fd14f':'#f08a4b';cx.beginPath();cx.arc(o.x,o.y,5,0,6.3);cx.fill();if(o.k==='g'){cx.strokeStyle=ink;cx.lineWidth=1.5;cx.stroke()}}
  cx.font='700 26px Gaegu,sans-serif';cx.textAlign='center';
  for(const e of eggs){if(e.tk!==tk)continue;cx.save();cx.translate(e.x+J(e.x,fr)*2,e.y);cx.fillStyle='#f0a6d8';cx.strokeStyle=ink;cx.lineWidth=4;cx.beginPath();cx.ellipse(0,0,18,22,0,0,6.3);cx.fill();cx.stroke();cx.strokeStyle='#fff';cx.lineWidth=3;cx.beginPath();cx.arc(4,-4,10,-1.1,.1);cx.stroke();
   if(e.id===selE){cx.strokeStyle=ink;cx.setLineDash([6,6]);cx.lineWidth=2.5;cx.beginPath();cx.ellipse(0,0,32,36,0,0,6.3);cx.stroke()}cx.restore();cx.fillStyle=ink;cx.fillText('알',e.x,e.y-34)}
@@ -203,7 +203,7 @@ function draw(t){
   cx.save();cx.globalAlpha=e.k==='leave'?Math.min(1,(1-q)*3):1;cx.drawImage(s.img,x-s.w/2,y-s.h/2,s.w,s.h);cx.strokeStyle=ink;cx.lineWidth=3;cx.fillStyle='rgba(154,214,240,.22)';cx.beginPath();cx.arc(x,y,r,0,6.3);cx.fill();cx.stroke();cx.strokeStyle='#fff';cx.lineWidth=4;cx.beginPath();cx.arc(x,y,r*.75,3.7,4.5);cx.stroke();
   if(e.k==='leave'&&e.s&&q<.7){cx.font='700 22px Gaegu,sans-serif';cx.textAlign='center';cx.fillStyle=ink;cx.fillText(e.s.s,x,y-r-14)}cx.restore()}continue}
 if(e.k==='splash'){const q=e.t/.9;if(q<1){cx.save();cx.strokeStyle=ink;cx.lineWidth=2.5;cx.globalAlpha=1-q;cx.beginPath();cx.ellipse(e.x,e.y+e.r*.3,e.r*(1+q*1.6),e.r*.35*(1+q*1.6),0,0,6.3);cx.stroke();cx.fillStyle='#9ad6f0';for(const [vx,vy,r] of e.d){const x=e.x+vx*e.t,y=e.y+vy*e.t+420*e.t*e.t;cx.beginPath();cx.ellipse(x,y,r*.8,r*1.15,Math.atan2(vy+840*e.t,vx)+Math.PI/2,0,6.3);cx.fill();cx.stroke()}cx.restore()}continue}if(e.k==='heart'){const q=e.t/1.6;if(q<1){const s=e.s*(.6+.4*Math.min(1,e.t/.15))*9;cx.save();cx.translate(e.x+Math.sin(e.t*5)*5,e.y-e.t*45);cx.scale(s/9,s/9);cx.globalAlpha=Math.min(1,(1-q)*2);cx.beginPath();cx.moveTo(0,6);cx.bezierCurveTo(-12,-2,-8,-14,0,-7);cx.bezierCurveTo(8,-14,12,-2,0,6);cx.closePath();cx.fillStyle='#f47a9b';cx.fill();cx.strokeStyle=ink;cx.lineWidth=2.2;cx.lineJoin='round';cx.stroke();cx.restore()}continue}if(e.k==='eat'){const q=e.t/.5;if(q<1){const f=e.f,mx=f.x+f.dir*f.dw*.47,my=f.y,w=q*q*(3-2*q),px=e.x+(mx-e.x)*w,py=e.y+(my-e.y)*w+Math.sin(q*9)*3*(1-q);
-  cx.fillStyle='#f08a4b';cx.beginPath();cx.ellipse(px,py,5*(1-q*.7)*(1+q*.6),5*(1-q*.7),Math.atan2(my-py,mx-px),0,6.3);cx.fill()}continue}if(e.k==='bp'){if(e.t<.4){const q=e.t/.4;cx.strokeStyle=`rgba(43,42,99,${1-q})`;cx.lineWidth=2.5;cx.beginPath();cx.arc(e.x,e.y,e.r*(1+q*.9),0,6.3);cx.stroke();for(let i=0;i<6;i++){const a=i*1.047+.3,r0=e.r*(1.3+q),r1=r0+5;cx.beginPath();cx.moveTo(e.x+Math.cos(a)*r0,e.y+Math.sin(a)*r0);cx.lineTo(e.x+Math.cos(a)*r1,e.y+Math.sin(a)*r1);cx.stroke()}}continue}const p=e.t/2.2;cx.strokeStyle=`rgba(240,138,75,${1-p*2.2})`;cx.lineWidth=3;cx.beginPath();cx.arc(e.x,e.y,5+p*50,0,6.3);cx.stroke()}
+  cx.fillStyle=e.g?'#8fd14f':'#f08a4b';cx.beginPath();cx.ellipse(px,py,5*(1-q*.7)*(1+q*.6),5*(1-q*.7),Math.atan2(my-py,mx-px),0,6.3);cx.fill()}continue}if(e.k==='bp'){if(e.t<.4){const q=e.t/.4;cx.strokeStyle=`rgba(43,42,99,${1-q})`;cx.lineWidth=2.5;cx.beginPath();cx.arc(e.x,e.y,e.r*(1+q*.9),0,6.3);cx.stroke();for(let i=0;i<6;i++){const a=i*1.047+.3,r0=e.r*(1.3+q),r1=r0+5;cx.beginPath();cx.moveTo(e.x+Math.cos(a)*r0,e.y+Math.sin(a)*r0);cx.lineTo(e.x+Math.cos(a)*r1,e.y+Math.sin(a)*r1);cx.stroke()}}continue}const p=e.t/2.2;cx.strokeStyle=`rgba(240,138,75,${1-p*2.2})`;cx.lineWidth=3;cx.beginPath();cx.arc(e.x,e.y,5+p*50,0,6.3);cx.stroke()}
  cx.restore()}
  tankUI()}
 /* 먹을 때 머리 위에 뜨는 말풍선: 종이를 삐뚤빼뚤 오려 붙인 느낌 */
@@ -263,7 +263,7 @@ function tankUI(){const T=tanks.find(t=>t.id===hovTk),k=s0*cam.z,r=cv.getBoundin
  const WN=$('#twalk');WN.hidden=!!pipW;const wk={};for(const f of fish)if(f.walk)(wk[f.tk]=wk[f.tk]||[]).push(f.name);
  for(const el of [...WN.children])if(!wk[el.dataset.tk])el.remove();
  for(const id in wk){let el=WN.querySelector(`[data-tk="${id}"]`);if(!el){el=document.createElement('button');el.className='twn';el.dataset.tk=id;el.onclick=()=>DUA.openPark&&DUA.openPark();WN.append(el)}
-  const h=`🫧 ${wk[id].map(esc).join(', ')} 산책 중<small>눌러서 공원으로 따라가기</small>`;if(el.innerHTML!==h)el.innerHTML=h;const t=TK(id),[x,y]=S(t.gx*SX+641,t.gy*SY+128);el.style.left=x+'px';el.style.top=y+'px';el.style.transform=`translate(-50%,-50%) scale(${cl(cam.z,.5,1.4).toFixed(3)})`}
+  const h=`🫧 ${wk[id].map(esc).join(', ')} 산책 중<small>눌러서 공원으로 따라가기</small>`;if(el.innerHTML!==h)el.innerHTML=h;const t=TK(id),[x,y]=S(t.gx*SX+641,t.gy*SY+390);el.style.left=x+'px';el.style.top=y+'px';el.style.transform=`translate(-50%,-50%) scale(${cl(cam.z,.5,1.4).toFixed(3)})`}
  // 빈 어항마다 '물고기가 없어요' + 추가 버튼
  const ET=$('#tempty');ET.hidden=!!(pipW||pickO);const emp=new Set(tanks.filter(t=>!fish.some(f=>f.tk===t.id)&&!eggs.some(e=>e.tk===t.id)).map(t=>t.id));
  for(const el of [...ET.children])if(!emp.has(el.dataset.tk))el.remove();
@@ -314,7 +314,7 @@ function click(W){const L=loc(W);
  if(pickO){if(L&&onPaper(L.x,L.y)){if(full(L.tk)){toast('이 어항은 자리가 없어요. 다른 어항을 골라 주세요');return}const o=pickO;endPick();o.tk=L.tk;addFish(o)}return}
  if(!L||!onPaper(L.x,L.y)){sel=selE=null;delArm=false;panel();if(tanks.length>1&&!isOv()){fitAll();return}nextBg();return}const w=L,tk=L.tk;
  if((isOv()||tanks.length>1&&tk!==actTk())&&!feed&&!fish.some(f=>!f.walk&&f.tk===tk&&Math.abs(w.x-f.x)<f.dw/2+8&&Math.abs(w.y-f.y)<f.dh/2+8)&&!eggs.some(e=>e.tk===tk&&Math.abs(w.x-e.x)<28&&Math.abs(w.y-e.y)<32)){focusTank(tk);return}
- if(feed){const q=fitPt(w.x,w.y,0,0);if(w.y>205&&Math.hypot((w.x-641)/441,(w.y-380)/255)<1&&foods.length<60)for(let i=0;i<4;i++)foods.push({tk,x:w.x+rnd(-40,40),y:w.y+rnd(-14,14),v:rnd(20,36),t:0});return}
+ if(feed){const q=fitPt(w.x,w.y,0,0);if(w.y>205&&Math.hypot((w.x-641)/441,(w.y-380)/255)<1&&foods.length<60)for(let i=0;i<4;i++)foods.push({tk,k:foodK,x:w.x+rnd(-40,40),y:w.y+rnd(-14,14),v:rnd(20,36),t:0});return}
  if(w.y>205&&Math.hypot((w.x-641)/441,(w.y-380)/255)<1){const k=0|rnd(3,6);for(let i=0;i<k;i++)bsp(w.x+rnd(-12,12),w.y+rnd(-8,8),rnd(3,8),tk);sndPlay()}
  sel=selE=null;delArm=false;
  for(const e of eggs)if(e.tk===tk&&Math.abs(w.x-e.x)<28&&Math.abs(w.y-e.y)<32){selE=e.id;break}
@@ -736,7 +736,12 @@ $('#minimsg').onclick=()=>{if(pipW)pipW.close()};
 
 /* ---------- 버튼 / 설정 ---------- */
 $('#bd').onclick=()=>{if(tanks.length>1?tanks.every(t=>full(t.id)):full()){toast(tanks.length>1?'지금 보고 있는 어항에 자리가 없어요. 다른 어항으로 옮겨 보거나 새 어항을 추가해 보세요.':'어항에 자리가 없어요. 어항에 마우스를 올려 옆에 새 어항을 추가해 보세요.');return}openDraw()};
-$('#bf').onclick=()=>{feed=!feed;$('#bf').classList.toggle('on',feed);cv.style.cursor=feed?'crosshair':'grab';if(feed)toast('어항을 클릭하면 먹이를 줄 수 있어요')};
+/* 먹이 주기: 일반 사료(주황, 배고픔만 달램) / 성장 사료(연두, 먹으면 몸집이 자람) */
+let foodK='n';const setFeed=k=>{feed=!!k;if(k)foodK=k;$('#bf').classList.toggle('on',feed);$('#fdm').hidden=true;document.querySelectorAll('#fdm button').forEach(b=>b.classList.toggle('on',feed&&b.dataset.k===foodK));cv.style.cursor=feed?'crosshair':'';};
+$('#bf').onclick=()=>{if(feed){setFeed(null);return}$('#fdm').hidden=!$('#fdm').hidden};
+const FDD={n:['일반 사료','배고픔을 달래 줘요. 몸집은 커지지 않아요'],g:['성장 사료','먹으면 몸집이 한 칸씩 자라요. 배고픔은 조금만 줄어요']};
+document.querySelectorAll('#fdm button').forEach(b=>{b.onclick=()=>{setFeed(b.dataset.k);$('#ctip').hidden=true};
+ b.onpointerenter=()=>{const t=$('#ctip'),r=b.getBoundingClientRect(),[n,d]=FDD[b.dataset.k];t.innerHTML=`<b>${n}</b><small>${d}</small>`;t.hidden=false;t.style.left=(r.right+12)+'px';t.style.top=(r.top+r.height/2-t.offsetHeight/2)+'px'};b.onpointerleave=()=>{$('#ctip').hidden=true}});
 let lArm=null;
 function roster(){const L=$('#lst');if(!fish.length){L.innerHTML='<p style="color:var(--mute)">어항에 물고기가 없어요.</p>';return}
  L.innerHTML=fish.map(f=>{const a=age(f);return `<div class="lr"><img src="${f.img.startsWith('data:image/')?f.img:''}" alt=""><div><b>${esc(f.name)}</b> <span class="sx" style="width:26px;height:26px;line-height:20px;font-size:18px">${f.sex==='M'?'♂':'♀'}</span><small>${ageS(a)} · ${(f.tr||[]).map(k=>TR[k]).join('·')}</small><small>${esc(state(f))}</small></div><button class="btn" data-id="${f.id}">${lArm===f.id?'정말?':'삭제'}</button></div>`}).join('');

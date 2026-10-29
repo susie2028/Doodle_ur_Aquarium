@@ -1,12 +1,12 @@
 /* ---------- 물방울 공원: 산책 나온 내 물고기와 동네 물고기가 어울리는 사교의 장 ---------- */
 (()=>{
 const D=window.DUA,P=D.park,$=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),pk=a=>a[0|Math.random()*a.length];
-const W=1800,H=1100,INK='#2b2a63',SKEY='doodle-aquarium-v2-park',NPCN=7;
+const SC=1.5,W=1800*SC,H=1100*SC,INK='#2b2a63',SKEY='doodle-aquarium-v2-park',NPCN=7;
 const G=$('#park'),cv=$('#pkc'),g=cv.getContext('2d');
 let cam={z:1,x:W/2,y:H/2},on=false,raf=0,last=0,CW=1,CH=1,ents=[],npcs=[],snacks=[],fx=[],news=[],drag=null,pdn=null,pt0=null,relS={},syncT=0,saveT=0;
 const tex=new Image();tex.src='assets/kiboecontor-paper-626781_1920.jpg';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const SPOTS=[{k:'forest',x:310,y:650,r:190,n:'수초 숲'},{k:'stage',x:900,y:300,r:180,n:'조개 무대'},{k:'bench',x:1490,y:660,r:170,n:'산호 벤치'},{k:'fountain',x:900,y:830,r:150,n:'거품 분수'}];
+const SPOTS=[{k:'forest',x:310,y:650,r:190,n:'수초 숲'},{k:'stage',x:900,y:300,r:180,n:'조개 무대'},{k:'bench',x:1490,y:660,r:170,n:'산호 벤치'},{k:'fountain',x:900,y:830,r:150,n:'거품 분수'}].map(p=>({...p,x:p.x*SC,y:p.y*SC,r:p.r*SC}));
 const seeded=(sd,fn)=>{const R=Math.random;let x=sd*9301+49297;Math.random=()=>(x=(x*16807)%2147483647)/2147483647;try{return fn()}finally{Math.random=R}};
 
 /* ---------- 동네 물고기 (저장해 두고 다음에 와도 그대로) ---------- */
@@ -32,7 +32,7 @@ const comp=(a,b)=>{let c=1;if(has(a,'soc')||has(b,'soc'))c+=.4;if((a.tr||[]).som
 const taste=(a,b)=>{let h=7;for(const c of a.id+'|'+b.id)h=(h*31+c.charCodeAt(0))|0;return .5+((h>>>0)%1000)/1000};
 function bub(e,s){e.say={s,t:performance.now()/1000,d:Math.min(3.4,1.6+s.length*.08)}}
 function hearts(a,b,k){for(let i=0;i<k;i++)fx.push({k:'heart',x:(a.x+b.x)/2+rnd(-30,30),y:Math.min(a.y,b.y)-30-rnd(0,20),t:-i*.18,s:rnd(.9,1.3)})}
-function say(t){news.unshift(t);news=news.slice(0,5);$('#pknews').innerHTML='<h4>공원 소식</h4>'+news.map(n=>`<p>${n}</p>`).join('')}
+function say(t){news.unshift(t);news=news.slice(0,60);$('#pknews').innerHTML='<h4>공원 소식</h4>'+news.map(n=>`<p>${n}</p>`).join('')}
 // 관계가 한 단계 올라가면 소식 + 말풍선
 function relCheck(a,b){const key=a.id+'>'+b.id,s=stg(a,b),p=relS[key]||'보통';if(s===p)return;relS[key]=s;if(a.me&&b.me)a.f.rs[b.id]=s;if(RANK[s]<RANK[p]&&s!=='라이벌')return;
  const A=esc(a.name),B=esc(b.name);
@@ -59,7 +59,7 @@ function chat(a,b,boost){const s=stg(a,b);let A,B;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function resize(){const d=Math.min(devicePixelRatio||1,2);CW=innerWidth;CH=innerHeight;cv.width=CW*d;cv.height=CH*d}
 addEventListener('resize',()=>{if(!G.hidden)resize()});
-async function openPark(){if(!G.hidden)return;$('#m').hidden=true;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#pkload').hidden=false;$('#pkcard').hidden=true;
+async function openPark(){if(!G.hidden)return;$('#m').hidden=true;cam={z:1,x:W/2,y:H/2};resize();G.hidden=false;G.classList.remove('run');$('#pkload').hidden=false;$('#pkcard').hidden=true;
  setTimeout(()=>G.classList.add('on'),20);await sleep(800);
  if(!npcs.length)loadN();ents=[];snacks=[];fx=[];relS={};
  for(const n of npcs){ents.push(npcEnt(n));await sleep(0)}
@@ -68,7 +68,7 @@ async function openPark(){if(!G.hidden)return;$('#m').hidden=true;D.zoomIn();res
  cam={z:1,x:W/2,y:H/2};$('#pkload').hidden=true;G.classList.add('run');if(!news.length)say('공원에 온 걸 환영해요!');
  $('#pkhelp').hidden=false;
  on=true;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
-function leave(){on=false;cancelAnimationFrame(raf);saveN();P.save();G.classList.remove('on');D.zoomOut();setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
+function leave(){on=false;news=[];$('#pknews').innerHTML='';cancelAnimationFrame(raf);saveN();P.save();G.classList.remove('on');setTimeout(()=>{G.hidden=true;G.classList.remove('run')},800)}
 $('#pkexit').onclick=leave;$('#bpk').onclick=openPark;D.openPark=openPark;
 
 /* ---------- 움직임 ---------- */
@@ -103,14 +103,14 @@ function step(dt,now){
   if(a.talk<=0&&b.talk<=0&&d<150&&Math.random()<dt*.5)chat(a,b);
   if(stg(a,b)==='연인'&&d<130&&Math.random()<dt/6)hearts(a,b,1)}
  for(const e of fx)e.t+=dt;fx=fx.filter(e=>e.t<1.8);
- if(Math.random()<dt*2)fx.push({k:'fb',x:900+rnd(-50,50),y:800,t:0,r:rnd(4,9)})}
+ if(Math.random()<dt*2)fx.push({k:'fb',x:(900+rnd(-50,50))*SC,y:800*SC,t:0,r:rnd(4,9)})}
 
 /* ---------- 그리기 ---------- */
 const sc=()=>Math.min(CW/W,CH/H)*.96*cam.z;
 const clampC=()=>{const k=sc(),hx=Math.max(0,(W-CW/k)/2),hy=Math.max(0,(H-CH/k)/2);cam.x=cl(cam.x,W/2-hx,W/2+hx);cam.y=cl(cam.y,H/2-hy,H/2+hy)};
 const toW=(x,y)=>{const k=sc();return[(x-CW/2)/k+cam.x,(y-CH/2)/k+cam.y]};
 cv.addEventListener('wheel',e=>{e.preventDefault();const [bx,by]=toW(e.clientX,e.clientY);cam.z=cl(cam.z*Math.exp(-e.deltaY*.0015),1,3.5);const k=sc();cam.x=bx-(e.clientX-CW/2)/k;cam.y=by-(e.clientY-CH/2)/k;clampC()},{passive:false});
-function scenery(t){g.lineCap=g.lineJoin='round';g.strokeStyle=INK;
+function scenery(t){g.save();g.scale(SC,SC);g.lineCap=g.lineJoin='round';g.strokeStyle=INK;
  // 수초 숲
  g.lineWidth=5;for(let i=0;i<9;i++){const x=180+i*30+Math.sin(i*7)*12,h=150+(i*37%90);g.beginPath();for(let y=0;y<=h;y+=12){const xx=x+Math.sin(y*.04+t*1.2+i)*12*(y/h+.15);y?g.lineTo(xx,760-y):g.moveTo(xx,760)}g.stroke()}
  // 조개 무대
@@ -120,7 +120,7 @@ function scenery(t){g.lineCap=g.lineJoin='round';g.strokeStyle=INK;
  for(const [x,s] of [[1380,1],[1610,-1]]){g.beginPath();g.moveTo(x,760);g.lineTo(x,640);g.moveTo(x,690);g.lineTo(x+30*s,650);g.moveTo(x,665);g.lineTo(x-24*s,630);g.stroke()}
  // 거품 분수
  g.fillStyle='#fff';g.lineWidth=5;g.beginPath();g.ellipse(900,880,110,30,0,0,6.3);g.fill();g.stroke();g.beginPath();g.moveTo(880,860);g.lineTo(890,820);g.lineTo(910,820);g.lineTo(920,860);g.stroke();
- g.font='400 26px Gaegu,sans-serif';g.textAlign='center';g.fillStyle='rgba(43,42,99,.55)';for(const p of SPOTS)g.fillText(p.n,p.x,p.k==='stage'?412:p.k==='fountain'?940:800)}
+ g.font='400 26px Gaegu,sans-serif';g.textAlign='center';g.fillStyle='rgba(43,42,99,.55)';for(const p of SPOTS)g.fillText(p.n,p.x/SC,p.k==='stage'?412:p.k==='fountain'?940:800);g.restore()}
 function speech(e,t){const el=t-e.say.t;if(el>e.say.d){e.say=null;return}const a=Math.min(1,el/.12,(e.say.d-el)/.3);g.save();g.translate(e.x,e.y-e.spr.h/2-46);g.globalAlpha=a;g.font='700 22px Gaegu,sans-serif';
  const w=g.measureText(e.say.s).width/2+16,h=19,q=[];for(let i=0;i<30;i++){const an=i/30*6.283,c=Math.cos(an),s=Math.sin(an);if(i===8)q.push([6,h+3],[-2,h+12],[-7,h+2]);q.push([w*Math.sign(c)*Math.pow(Math.abs(c),.45)+Math.sin(i*7.1)*2.5,h*Math.sign(s)*Math.pow(Math.abs(s),.45)+Math.cos(i*5.3)*2])}
  const p=(dx,dy)=>{g.beginPath();q.forEach((v,i)=>i?g.lineTo(v[0]+dx,v[1]+dy):g.moveTo(v[0]+dx,v[1]+dy));g.closePath()};g.fillStyle='rgba(20,20,40,.16)';p(2,3);g.fill();g.fillStyle='#fff';p(0,0);g.fill();

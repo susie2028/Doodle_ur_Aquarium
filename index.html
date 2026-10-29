@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Doodle your Aquarium!</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261030f">
+<link rel="stylesheet" href="styles.css?v=20261030k">
 </head><body>
 <canvas id="c" aria-label="어항"></canvas>
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" aria-hidden="true"><filter id="cut" x="-30%" y="-45%" width="160%" height="190%" color-interpolation-filters="sRGB">
@@ -21,7 +21,7 @@
 <feMerge><feMergeNode in="sh"/><feMergeNode in="pp"/><feMergeNode in="SourceGraphic"/></feMerge></filter></svg>
 <div id="ttl" class="paper">Doodle <small>your</small><br>Aquarium!</div>
 <div id="day" class="paper"></div>
-<nav id="nav"><button class="cb" id="bd" data-tip="물고기 추가하기" data-ic="fish" aria-label="물고기 그리기"></button><button class="cb" id="bf" data-tip="먹이 주기" data-ic="food" aria-label="먹이 주기"></button><button class="cb" id="bl" data-tip="물고기 정보" data-ic="fishl" aria-label="물고기 목록"></button><button class="cb" id="bw" data-tip="소품함" data-ic="hanger" aria-label="소품함"></button><button class="cb" id="bs" data-tip="설정" data-ic="gear" aria-label="설정"></button></nav>
+<nav id="nav"><button class="cb" id="bd" data-tip="물고기 추가하기" data-ic="fish" aria-label="물고기 그리기"></button><div id="fdm" hidden><button class="btn" data-k="n"><i class="fdot"></i>일반 사료</button><button class="btn" data-k="g"><i class="fdot fg"></i>성장 사료</button></div><button class="cb" id="bf" data-tip="먹이 주기" data-ic="food" aria-label="먹이 주기"></button><button class="cb" id="bl" data-tip="물고기 정보" data-ic="fishl" aria-label="물고기 목록"></button><button class="cb" id="bw" data-tip="소품함" data-ic="hanger" aria-label="소품함"></button><button class="cb" id="bs" data-tip="설정" data-ic="gear" aria-label="설정"></button></nav>
 <button class="cb" id="bpk" data-tip="물방울 공원 (산책)" data-ic="park" aria-label="물방울 공원"></button>
 <button class="cb" id="bgm" data-tip="미니게임" data-ic="game" aria-label="미니게임"></button>
 <button class="cb" id="bm" data-tip="창 모드" data-ic="mini" aria-label="창 모드"></button>
@@ -75,7 +75,7 @@
 <p><label class="tg"><input type="checkbox" id="optFx" checked> 효과 (하트 · 물 튀김 · 거품)</label></p>
 <p><button class="btn" id="rs">어항 리셋</button></p></div></div>
 
-<script src="app.js?v=20261030f"></script>
-<script src="game.js?v=20261030f"></script>
-<script src="park.js?v=20261030f"></script>
+<script src="app.js?v=20261030k"></script>
+<script src="game.js?v=20261030k"></script>
+<script src="park.js?v=20261030k"></script>
 </body></html>

@@ -163,3 +163,9 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 #wl .acci{position:relative;cursor:default}.wx{position:absolute;top:2px;right:4px;border:0;background:none;font-size:20px;line-height:1;color:#2b2a63;cursor:pointer}
 #accgo{width:auto;margin-right:auto;font-size:17px;padding:0 14px;white-space:nowrap}#accdone{font-size:16px;padding:1px 14px;margin-left:8px;vertical-align:middle}
 #wslots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;max-height:60vh;overflow:auto;padding:4px}#wslots .acci{position:relative}#wslots .acd{opacity:.75}
+/* 먹이 고르기 (먹이 주기 버튼 위로 펼쳐짐) */
+#nav{position:fixed}#fdm{position:absolute;left:78px;bottom:calc(100% + 12px);display:flex;flex-direction:column;gap:8px}#fdm .btn{white-space:nowrap;font-size:18px;padding:6px 16px;display:flex;align-items:center;gap:8px}
+.fdot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#f08a4b}.fdot.fg{background:#8fd14f;border:1.5px solid #2b2a63}.btn.on .fdot{box-shadow:0 0 0 2px #fff}
+.fdot{flex:none;box-sizing:content-box}.fdot.fg{width:10px;height:10px}#fdm .btn{justify-content:flex-start}
+#pknews{max-height:min(320px,45vh);overflow:auto}
+#pkcard{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
