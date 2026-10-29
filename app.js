@@ -145,7 +145,7 @@ function pet(q){if(feed)return;const f=fish.find(o=>o.ok&&Math.abs(q.x-o.x)<o.dw
   if(pt0.c%2===0&&(!f.say||n/1000-f.say.t>2.2))f.say={s:PET[0|Math.random()*PET.length],t:n/1000,sd:rnd(0,99)}}}
 cv.onpointerup=e=>{if(pipW&&pdn&&!pdn.m){pdn=null;pipW.close();return}if(pdn&&!pdn.m)click(w2(e));pdn=null};
 /* ---------- 배경: 어항 밖을 누를 때마다 순서대로 바뀜 (세로 이미지는 자동으로 가로로 회전) ---------- */
-const BGS=['assets/bg/2-mariesmolej-paper.jpg','assets/bg/1-grid-paper.jpg','assets/bg/3-ripped-paper.jpg'],bgU={};
+const BGS=['assets/bg/4-lined-paper.jpg','assets/bg/2-mariesmolej-paper.jpg','assets/bg/1-grid-paper.jpg','assets/bg/3-ripped-paper.jpg'],bgU={};
 let bgi=0;try{bgi=(+localStorage.getItem(KEY+'-bg')||0)%BGS.length}catch(e){}
 function setBg(){const i=bgi,src=BGS[i];if(bgU[src]){document.body.style.backgroundImage=`url(${bgU[src]})`;return}
  const im=new Image();im.onload=()=>{if(im.naturalHeight<=im.naturalWidth){bgU[src]=src;if(bgi===i)setBg();return}
