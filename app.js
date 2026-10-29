@@ -55,7 +55,7 @@ function sndPlay(){const v=(+$('#vol').value||0)/100;
 function fitPt(x,y,hw,hh){const rx=441-hw-14,ry=255-hh-14,dx=(x-641)/rx,dy=(y-380)/ry,d=Math.hypot(dx,dy);if(d>1){x=641+dx/d*rx;y=380+dy/d*ry}return[x,cl(y,215+hh,BOT-hh)]}
 /* 먹이를 먹을수록 자람: 50번이면 몸집(면적)이 15배 → 어항 절반 크기, 15칸을 혼자 차지 */
 const GROW=50,slot=f=>1+(MAX-1)*Math.min(f.ml|0,GROW)/GROW,used=()=>fish.reduce((a,f)=>a+slot(f),0)+eggs.length,full=()=>used()+1>MAX+1e-6;
-function size(f){const k=Math.min(125/f.w,100/f.h),g=Math.sqrt(slot(f));let dw=f.w*k*g,dh=f.h*k*g;const c=Math.min(1,480/dw,260/dh);f.dw=dw*c;f.dh=dh*c}
+function size(f){const t=Math.min(f.ml|0,GROW)/GROW,k=Math.min(100/f.w,80/f.h),g=Math.sqrt(slot(f))*(1+.25*t);let dw=f.w*k*g,dh=f.h*k*g;const c=Math.min(1,480/dw,260/dh);f.dw=dw*c;f.dh=dh*c}
 function update(dt,now){
  for(const o of foods)o.c=0;
  for(const f of fish){if(!f.ok)continue;size(f);f.hu=Math.min(1,f.hu+dt/360);let tx,ty,sp=f.sp*(f.hu>=.75?.55:1),best=null,bd=1e9;
@@ -145,7 +145,7 @@ function pet(q){if(feed)return;const f=fish.find(o=>o.ok&&Math.abs(q.x-o.x)<o.dw
   if(pt0.c%2===0&&(!f.say||n/1000-f.say.t>2.2))f.say={s:PET[0|Math.random()*PET.length],t:n/1000,sd:rnd(0,99)}}}
 cv.onpointerup=e=>{if(pipW&&pdn&&!pdn.m){pdn=null;pipW.close();return}if(pdn&&!pdn.m)click(w2(e));pdn=null};
 /* ---------- 배경: 어항 밖을 누를 때마다 순서대로 바뀜 (세로 이미지는 자동으로 가로로 회전) ---------- */
-const BGS=['assets/bg/1-grid-paper.jpg','assets/bg/2-mariesmolej-paper.jpg','assets/bg/3-ripped-paper.jpg'],bgU={};
+const BGS=['assets/bg/2-mariesmolej-paper.jpg','assets/bg/1-grid-paper.jpg','assets/bg/3-ripped-paper.jpg'],bgU={};
 let bgi=0;try{bgi=(+localStorage.getItem(KEY+'-bg')||0)%BGS.length}catch(e){}
 function setBg(){const i=bgi,src=BGS[i];if(bgU[src]){document.body.style.backgroundImage=`url(${bgU[src]})`;return}
  const im=new Image();im.onload=()=>{if(im.naturalHeight<=im.naturalWidth){bgU[src]=src;if(bgi===i)setBg();return}

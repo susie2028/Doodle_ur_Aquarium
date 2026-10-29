@@ -1,7 +1,7 @@
 /* ---------- 미니게임: 작은 물고기를 잡아먹고 몸집을 키우는 솔로 게임 ---------- */
 (()=>{
 const D=window.DUA,$=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-const W=2600,H=1700,BOTS=16,PELLETS=170,DASH=.35,COOL=3,EAT=1.18,INK='#2b2a63';
+const W=3600,H=2300,SAND=H-190,SKINS=32,BOTS=22,PELLETS=300,DASH=.35,COOL=3,EAT=1.18,INK='#2b2a63';
 const G=$('#game'),gc=$('#gc'),g=gc.getContext('2d');
 let act=false,CW=1,CH=1,run=false,over=false,fish=[],pel=[],fx=[],me=null,cam={x:W/2,y:H/2,z:1},mouse=null,last=0,raf=0,bestRank=99,bestM=1,spr=[],mySpr=null,myName='';
 const tex=new Image();tex.src='assets/kiboecontor-paper-626781_1920.jpg';let texP=null;
@@ -13,6 +13,10 @@ const seeded=(sd,fn)=>{const R=Math.random;let x=sd*9301+49297;Math.random=()=>(
 const RIM=(()=>{const q=[],r=90,c=[[r,r],[W-r,r],[W-r,H-r],[r,H-r]];for(let i=0;i<4;i++){const [cx,cy]=c[i];for(let a=0;a<=8;a++){const t=(i-2)*Math.PI/2+a/8*Math.PI/2;q.push([cx+Math.cos(t)*r+rnd(-5,5),cy+Math.sin(t)*r+rnd(-5,5)])}
  const n=c[(i+1)%4],m=Math.round(Math.hypot(n[0]-cx,n[1]-cy)/70);for(let k=1;k<m;k++){const t=(i-1)*Math.PI/2,ox=Math.cos(t)*r,oy=Math.sin(t)*r;q.push([cx+(n[0]-cx)*k/m+ox+rnd(-5,5),cy+(n[1]-cy)*k/m+oy+rnd(-5,5)])}}return q})();
 
+/* 바닥: 어항처럼 모래 선, 자갈, 흔들리는 수초 */
+const FLOOR=(()=>{const top=[];for(let x=60;x<=W-60;x+=40)top.push([x,SAND+Math.sin(x*.008)*14+rnd(-4,4)]);
+ const peb=[],NP=24;for(let i=0;i<NP;i++)peb.push([180+(W-360)*(i+rnd(.15,.85))/NP,rnd(SAND+45,H-80),rnd(10,22)]);
+ const weed=[],NW=9;for(let i=0;i<NW;i++){const x=220+(W-440)*(i+rnd(.2,.8))/NW;for(let k=0;k<1+(Math.random()<.55);k++)weed.push({x:x+k*rnd(22,34),h:rnd(130,260),ph:rnd(0,6.3)})}return{top,peb,weed}})();
 function resize(){const d=Math.min(devicePixelRatio||1,2);CW=innerWidth;CH=innerHeight;gc.width=CW*d;gc.height=CH*d}
 addEventListener('resize',()=>{if(!G.hidden)resize()});
 
@@ -22,17 +26,25 @@ function sprFromP(p){const c=document.createElement('canvas');c.width=840;c.heig
 function sprFromImg(img){return D.stick(D.up(img,1.5),1.5)}
 const len=f=>76*Math.sqrt(f.m),score=f=>Math.round(f.m*100);
 
-function mkFish(o){const s=o.spr.s;return{x:o.x,y:o.y,vx:0,vy:0,m:o.m,spr:s,ar:s.height/s.width,name:o.name,me:!!o.me,dir:1,flip:1,dash:0,cd:rnd(0,COOL),ai:0,tx:o.x,ty:o.y,ph:rnd(0,6.3),alive:true,born:performance.now()}}
-function spawnBot(m){const s=spr[0|Math.random()*spr.length];let x,y,k=0;do{x=rnd(200,W-200);y=rnd(200,H-200)}while(me&&Math.hypot(x-me.x,y-me.y)<600&&++k<20);
- const pool=['F','M'][0|Math.random()*2];return mkFish({x,y,m:m??botM(),spr:s,name:D.rname(pool)})}
+function mkFish(o){const s=o.spr.s;return{si:o.si??-1,x:o.x,y:o.y,vx:0,vy:0,m:o.m,spr:s,ar:s.height/s.width,name:o.name,me:!!o.me,dir:1,flip:1,dash:0,cd:rnd(0,COOL),ai:0,tx:o.x,ty:o.y,ph:rnd(0,6.3),alive:true,born:performance.now()}}
+function spawnBot(m){const live=fish.filter(f=>f.alive&&!f.me),used=new Set(live.map(f=>f.si)),free=spr.map((_,i)=>i).filter(i=>!used.has(i)),si=free.length?free[0|Math.random()*free.length]:0|Math.random()*spr.length;
+ let x,y,k=0;do{x=rnd(200,W-200);y=rnd(200,SAND-80)}while(me&&Math.hypot(x-me.x,y-me.y)<600&&++k<20);
+ // 이름도 살아 있는 물고기끼리 겹치지 않게
+ const names=new Set(fish.filter(f=>f.alive).map(f=>f.name));let nm;for(let i=0;i<20;i++){nm=botName();if(!names.has(nm))break}
+ return mkFish({x,y,m:m??botM(),spr:spr[si],si,name:nm})}
+// 봇 이름: '느긋한 고등어'처럼 꾸밈말+물고기, 또는 바다에서 온 한 단어
+const ADJ=['느긋한','졸린','날쌘','수줍은','용감한','배고픈','까칠한','통통한','반짝이는','심심한','부지런한','엉뚱한','새침한','멋쟁이','꼬마'],
+ FN=['고등어','송사리','피라미','도미','꽁치','연어','참치','금붕어','구피','베타','복어','가자미','망둥이','쏘가리','멸치','정어리','갈치','우럭','광어','열대어'],
+ SEA=['파도','산호','소라','진주','물결','해초','미역','다시마','조개','불가사리','해파리','물방울','꼬르륵','뽀글','썰물','밀물','모래알','등대','소용돌이','은비늘'];
+const botName=()=>Math.random()<.6?ADJ[0|Math.random()*ADJ.length]+' '+FN[0|Math.random()*FN.length]:SEA[0|Math.random()*SEA.length];
 // 대부분은 나보다 작게, 일부는 크게 (긴장감)
 function botM(){const b=me?me.m:1;return Math.random()<.7?cl(b*rnd(.3,.85),.25,40):cl(b*rnd(1.3,2.4),.6,60)}
-const addPel=()=>pel.push({x:rnd(120,W-120),y:rnd(120,H-120),r:rnd(4,7),ph:rnd(0,6.3)});
+const addPel=()=>pel.push({x:rnd(120,W-120),y:rnd(120,SAND-30),r:rnd(4,7),ph:rnd(0,6.3)});
 
 /* ---------- 시작 / 끝 ---------- */
 async function enter(){if(!G.hidden)return;act=true;D.zoomIn();resize();G.hidden=false;G.classList.remove('run');$('#gload').hidden=false;$('#gload').textContent='어항 속으로 풍덩!';$('#gover').hidden=true;$('#gpick').hidden=true;$('#grank').hidden=true;$('#gdash').hidden=true;
  setTimeout(()=>G.classList.add('on'),20);await sleep(850);if(!act)return;
- if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<10;i++){const s=sprFromP(seeded(i+1,D.genP));if(s)spr.push(s);if(i%3===2)await sleep(0)}}
+ if(!spr.length){$('#gload').textContent='물고기 친구들 부르는 중...';await sleep(30);for(let i=0;i<SKINS;i++){const s=sprFromP(seeded(i+1,D.genP));if(s)spr.push(s);if(i%3===2){$('#gload').textContent=`물고기 친구들 부르는 중... ${Math.round((i+1)/SKINS*100)}%`;await sleep(0)}}}
  if(!act)return;choose()}
 function choose(){const list=D.fishList();if(list.length)pick(list);else newFish()}
 /* 어항에 있는 물고기로 할지, 새로 만들지 고르기 */
@@ -70,21 +82,21 @@ const mouth=f=>[f.x+f.dir*len(f)*.42,f.y];
 function think(f){const L=len(f);let th=null,td=1e9,pr=null,pd=1e9;
  for(const o of fish){if(o===f||!o.alive)continue;const d=Math.hypot(o.x-f.x,o.y-f.y);if(o.m>f.m*EAT&&d<td&&d<320+L)th=o,td=d;else if(f.m>o.m*EAT&&d<pd&&d<460+L)pr=o,pd=d}
  if(th&&td<240+L*.5){const a=Math.atan2(f.y-th.y,f.x-th.x)+rnd(-.5,.5);f.tx=f.x+Math.cos(a)*300;f.ty=f.y+Math.sin(a)*300;if(td<150+L*.3&&Math.random()<.5)dash(f)}
- else if(pr){f.tx=pr.x-Math.sign(pr.x-f.x)*L*.4;f.ty=pr.y;if(pd<170+L*.3&&Math.random()<.35)dash(f)}
+ else if(pr){f.tx=pr.x;f.ty=pr.y;if(pd<170+L*.3&&Math.random()<.35)dash(f)}
  else{let b=null,bd=380;for(const p of pel){const d=Math.hypot(p.x-f.x,p.y-f.y);if(d<bd)b=p,bd=d}
-  if(b){f.tx=b.x;f.ty=b.y}else if(Math.hypot(f.tx-f.x,f.ty-f.y)<40){f.tx=rnd(150,W-150);f.ty=rnd(150,H-150)}}}
+  if(b){f.tx=b.x;f.ty=b.y}else if(Math.hypot(f.tx-f.x,f.ty-f.y)<40){f.tx=rnd(150,W-150);f.ty=rnd(150,SAND-60)}}}
 function step(dt,now){
  for(const f of fish){if(!f.alive)continue;f.cd=Math.max(0,f.cd-dt);f.dash=Math.max(0,f.dash-dt);
   if(f.me){if(mouse)[f.tx,f.ty]=mouseW()}
   else if((f.ai-=dt)<=0){f.ai=rnd(.2,.35);think(f)}
   const dx=f.tx-f.x,dy=f.ty-f.y,d=Math.hypot(dx,dy)||1,s=Math.min(sp(f),d*3),a=Math.min(1,dt*(f.dash>0?8:4));
   f.vx+=(dx/d*s-f.vx)*a;f.vy+=(dy/d*s-f.vy)*a;const L=len(f),hh=L*f.ar/2;
-  f.x=cl(f.x+f.vx*dt,40+L/2,W-40-L/2);f.y=cl(f.y+f.vy*dt,40+hh,H-40-hh);
+  f.x=cl(f.x+f.vx*dt,40+L/2,W-40-L/2);f.y=cl(f.y+f.vy*dt,40+hh,SAND-hh*.3);
   if(Math.abs(f.vx)>6)f.dir=f.vx>0?1:-1;f.flip+=(f.dir-f.flip)*Math.min(1,dt*10)}
- // 먹기: 입이 상대 몸에 닿고, 내가 1.18배 이상 크면 꿀꺽
- for(const a of fish){if(!a.alive)continue;const [mx,my]=mouth(a),La=len(a);
-  for(const b of fish){if(b===a||!b.alive||a.m<b.m*EAT)continue;if(Math.hypot(mx-b.x,my-b.y)<len(b)*.32+La*.12){b.alive=false;a.m+=b.m*.7;eatFx(a,b,true);if(b.me){gameOver(a);return}setTimeout(()=>{if(!over){const i=fish.indexOf(b);if(i>=0)fish.splice(i,1,spawnBot())}},1200)}}
-  for(let i=pel.length-1;i>=0;i--){const p=pel[i];if(Math.hypot(mx-p.x,my-p.y)<La*.2+p.r+4){pel.splice(i,1);a.m+=.035;if(a.me)eatFx(a,p,false);addPel()}}}
+ // 먹기: 몸 어디든 닿으면 꿀꺽 (내가 1.18배 이상 클 때)
+ for(const a of fish){if(!a.alive)continue;const La=len(a),rx=La/2,ry=La*a.ar/2,inA=(x,y,p)=>((x-a.x)/(rx+p))**2+((y-a.y)/(ry+p))**2<1;
+  for(const b of fish){if(b===a||!b.alive||a.m<b.m*EAT)continue;if(inA(b.x,b.y,len(b)*.2)){b.alive=false;a.m+=b.m*.7;eatFx(a,b,true);if(b.me){gameOver(a);return}setTimeout(()=>{if(!over){const i=fish.indexOf(b);if(i>=0)fish.splice(i,1,spawnBot())}},1200)}}
+  for(let i=pel.length-1;i>=0;i--){const p=pel[i];if(inA(p.x,p.y,p.r+4)){pel.splice(i,1);a.m+=.035;if(a.me)eatFx(a,p,false);addPel()}}}
  if(me.m>bestM)bestM=me.m;
  for(const e of fx)e.t+=dt;fx=fx.filter(e=>e.t<1.6)}
 const SAY=['냠!','꿀꺽!','맛있다!','냠냠'];
@@ -101,6 +113,10 @@ function draw(now){const d=gc.width/CW;g.setTransform(1,0,0,1,0,0);g.fillStyle='
  const rim=()=>{g.beginPath();RIM.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath()};
  g.fillStyle='rgba(20,20,40,.1)';g.save();g.translate(14,18);rim();g.fill();g.restore();g.fillStyle='#fff';rim();g.fill();
  if(tex.complete&&tex.naturalWidth){if(!texP){texP=g.createPattern(tex,'no-repeat');const z=Math.max(W/tex.naturalWidth,H/tex.naturalHeight);texP.setTransform(new DOMMatrix([z,0,0,z,0,0]))}g.globalAlpha=.3;g.fillStyle=texP;rim();g.fill();g.globalAlpha=1}
+ g.save();rim();g.clip();g.strokeStyle=INK;g.lineCap=g.lineJoin='round';const t0=now/1000;
+ g.lineWidth=5;for(const w of FLOOR.weed){g.beginPath();for(let y=0;y<=w.h;y+=12){const x=w.x+Math.sin(y*.035+t0*1.3+w.ph)*14*(y/w.h+.15);y?g.lineTo(x,SAND+6-y):g.moveTo(x,SAND+6)}g.stroke()}
+ g.lineWidth=5.5;g.beginPath();FLOOR.top.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
+ g.lineWidth=4;for(const [x,y,r] of FLOOR.peb){g.beginPath();g.arc(x,y,r,Math.PI*1.05,Math.PI*1.95);g.stroke()}g.restore();
  g.strokeStyle=INK;g.lineWidth=7;g.lineJoin='round';rim();g.stroke();
  for(const p of pel){g.fillStyle='#f08a4b';g.beginPath();g.arc(p.x,p.y+Math.sin(now/600+p.ph)*2,p.r,0,6.3);g.fill()}
  const t=now/1000;

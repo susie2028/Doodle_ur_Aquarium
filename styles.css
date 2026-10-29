@@ -83,7 +83,7 @@ input[type=range]:not(#hue)::-moz-range-thumb{width:14px;height:14px;border-radi
 .gbtn{border:0;background:#fff;color:#2b2a63;cursor:pointer;font:700 20px Gaegu,sans-serif}
 #gexit{left:20px;top:calc(18px + env(safe-area-inset-top,0px))}#gexit:hover{transform:scale(1.05)}
 #grank{right:20px;top:calc(18px + env(safe-area-inset-top,0px));min-width:210px;font-weight:400;font-size:19px}
-#grank h4{margin:0 0 6px;font-size:22px}#grank ol{margin:0;padding:0;list-style:none}#grank li{display:flex;justify-content:space-between;gap:14px;line-height:1.5}#grank li.me{font-weight:700;text-decoration:underline wavy #f47a9b}#grank li small{color:#77778f}#grank .gap{color:#77778f;text-align:center}
+#grank h4{margin:0 0 6px;font-size:22px}#grank ol{margin:0;padding:0;list-style:none}#grank li{display:flex;justify-content:space-between;gap:14px;line-height:1.5}#grank li.me{font-weight:700}#grank li small{color:#77778f}#grank .gap{color:#77778f;text-align:center}
 #gdash{left:20px;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px}#gdash .gb{width:140px;max-width:none}#gdash .gb i{transition:width .1s linear}#gdash.ready .gb i{background:#f08a4b}
 #gdb{font-size:16px;padding:2px 12px;border:2.5px solid #2b2a63;border-radius:999px}
 #gover{left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;padding:22px 34px;font-size:22px}#gover h3{margin:0 0 8px;font-size:34px}#gover p{margin:4px 0;font-weight:400}#gover .row{justify-content:center;margin-top:14px}
